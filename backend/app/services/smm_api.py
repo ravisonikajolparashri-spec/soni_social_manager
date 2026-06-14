@@ -8,7 +8,7 @@ class SMMApiError(Exception):
 
 
 class SMMApiClient:
-    """Client for BluesSMM Panel API (https://bluesmmpanel.com/api/v2)"""
+    """HTTP client for the configured SMM provider API."""
 
     def __init__(self, api_url: str = None, api_key: str = None):
         self.api_url = api_url or settings.SMM_API_URL

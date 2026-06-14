@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     SMM_API_URL: str = "https://bluesmmpanel.com/api/v2"
     SMM_API_KEY: str
 
-    APP_NAME: str = "SMM Panel"
+    APP_NAME: str = "Viral SMM Panel"
     ADMIN_EMAIL: str
     ADMIN_PASSWORD: str
 

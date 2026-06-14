@@ -37,9 +37,9 @@ async def place_order(
 
     # Check balance
     if current_user.balance < charge:
-        raise HTTPException(status_code=402, detail=f"Insufficient balance. Required: ${charge:.4f}")
+        raise HTTPException(status_code=402, detail=f"Insufficient balance. Required: ₹{charge:.4f}")
 
-    # Place order on BluesSMM Panel
+    # Submit order to provider API
     try:
         smm_response = await smm_client.add_order(
             service_id=service.external_id,
@@ -50,7 +50,7 @@ async def place_order(
             interval=data.interval
         )
     except SMMApiError as e:
-        raise HTTPException(status_code=502, detail=f"SMM API error: {str(e)}")
+        raise HTTPException(status_code=502, detail=f"Order failed: {str(e)}")
 
     external_order_id = smm_response.get("order")
 

@@ -37,15 +37,11 @@ export default function NewOrder() {
     e.preventDefault()
     setError(''); setSuccess(''); setLoading(true)
     try {
-      const payload = {
-        service_id: selectedService.id,
-        link: form.link,
-        quantity: Number(form.quantity),
-      }
+      const payload = { service_id: selectedService.id, link: form.link, quantity: Number(form.quantity) }
       if (form.comments) payload.comments = form.comments
       await ordersAPI.create(payload)
       await refreshUser()
-      setSuccess('Order placed successfully! Redirecting...')
+      setSuccess('Order placed! Redirecting…')
       setTimeout(() => navigate('/orders'), 1500)
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to place order')
@@ -55,16 +51,29 @@ export default function NewOrder() {
   }
 
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="space-y-5 sm:space-y-6">
+
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-800">New Order</h1>
-        <p className="text-slate-500 text-sm mt-1">Select a service and fill in the details below</p>
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-800">New Order</h1>
+        <p className="text-slate-500 text-xs sm:text-sm mt-1">Select a service and fill in the details below</p>
       </div>
 
-      <div className="grid lg:grid-cols-5 gap-6">
-        {/* Form */}
-        <div className="lg:col-span-3 bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+      {/* Balance pill — mobile only (quick reference) */}
+      <div className="flex items-center gap-2 sm:hidden">
+        <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2">
+          <span className="text-xs text-emerald-600 font-medium">Balance</span>
+          <span className="text-base font-bold text-emerald-700">₹{user?.balance?.toFixed(2) ?? '0.00'}</span>
+        </div>
+      </div>
+
+      {/* Main layout: stacked mobile → side-by-side lg */}
+      <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
+
+        {/* ── Form ──────────────────────────────────────────────────── */}
+        <div className="flex-1 bg-white rounded-2xl shadow-sm border border-slate-100 p-4 sm:p-6">
+
+          {/* Alerts */}
           {error && (
             <div className="flex items-start gap-3 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-5 text-sm">
               <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -78,7 +87,8 @@ export default function NewOrder() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+
             {/* Category */}
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">Category</label>
@@ -86,9 +96,9 @@ export default function NewOrder() {
                 value={selectedCategory}
                 onChange={e => setSelectedCategory(e.target.value)}
                 required
-                className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm min-h-[44px] touch-manipulation"
               >
-                <option value="">Choose a category...</option>
+                <option value="">Choose a category…</option>
                 {categories.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
@@ -101,13 +111,11 @@ export default function NewOrder() {
                   value={selectedService?.id || ''}
                   onChange={e => setSelectedService(services.find(s => s.id === Number(e.target.value)) || null)}
                   required
-                  className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm min-h-[44px] touch-manipulation"
                 >
-                  <option value="">Choose a service...</option>
+                  <option value="">Choose a service…</option>
                   {services.map(s => (
-                    <option key={s.id} value={s.id}>
-                      #{s.external_id} — {s.name} (₹{s.rate}/1k)
-                    </option>
+                    <option key={s.id} value={s.id}>#{s.external_id} — {s.name} (₹{s.rate}/1k)</option>
                   ))}
                 </select>
               </div>
@@ -121,7 +129,7 @@ export default function NewOrder() {
                 required
                 value={form.link}
                 onChange={e => setForm({ ...form, link: e.target.value })}
-                className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm min-h-[44px]"
                 placeholder="https://instagram.com/yourprofile"
               />
             </div>
@@ -131,7 +139,7 @@ export default function NewOrder() {
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">
                 Quantity
                 {selectedService && (
-                  <span className="text-slate-400 font-normal ml-2">
+                  <span className="text-slate-400 font-normal ml-2 text-xs">
                     ({selectedService.min_order.toLocaleString()} – {selectedService.max_order.toLocaleString()})
                   </span>
                 )}
@@ -143,15 +151,17 @@ export default function NewOrder() {
                 max={selectedService?.max_order || 999999}
                 value={form.quantity}
                 onChange={e => setForm({ ...form, quantity: e.target.value })}
-                className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm min-h-[44px]"
                 placeholder="e.g. 1000"
               />
             </div>
 
-            {/* Comments (optional) */}
+            {/* Comments */}
             {selectedService?.type === 'Custom Comments' && (
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5">Comments <span className="text-slate-400 font-normal">(optional)</span></label>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                  Comments <span className="text-slate-400 font-normal">(optional)</span>
+                </label>
                 <textarea
                   value={form.comments}
                   onChange={e => setForm({ ...form, comments: e.target.value })}
@@ -162,36 +172,46 @@ export default function NewOrder() {
               </div>
             )}
 
-            {/* Balance warning */}
+            {/* Insufficient balance warning */}
             {insufficientBalance && (
-              <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
-                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                Insufficient balance. You have <strong className="mx-1">₹{user.balance.toFixed(4)}</strong> but need <strong className="ml-1">₹{charge}</strong>.
+              <div className="flex items-start gap-2 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+                <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <span>Insufficient balance. You have <strong>₹{user.balance.toFixed(4)}</strong> but need <strong>₹{charge}</strong>.</span>
               </div>
             )}
 
+            {/* Charge preview on mobile (service info panel is hidden) */}
+            {charge && (
+              <div className="lg:hidden bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
+                <p className="text-xs text-blue-600 font-medium mb-0.5">Total Charge</p>
+                <p className="text-xl font-bold text-blue-700">₹{charge}</p>
+              </div>
+            )}
+
+            {/* Submit */}
             <button
               type="submit"
               disabled={loading || !selectedService || insufficientBalance}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
+              className="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 sm:py-3.5 rounded-xl transition-colors text-sm flex items-center justify-center gap-2 min-h-[48px] touch-manipulation"
             >
               {loading ? (
                 <>
                   <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/></svg>
-                  Placing order...
+                  Placing order…
                 </>
               ) : (
                 <>
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                  {charge ? `Place Order — $${charge}` : 'Place Order'}
+                  {charge ? `Place Order — ₹${charge}` : 'Place Order'}
                 </>
               )}
             </button>
           </form>
         </div>
 
-        {/* Service info sidebar */}
-        <div className="lg:col-span-2 space-y-4">
+        {/* ── Service info panel — hidden on mobile ─────────────────── */}
+        <div className="hidden lg:flex lg:flex-col gap-4 w-72 xl:w-80 shrink-0">
+
           {/* Balance */}
           <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
             <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide mb-1">Your Balance</p>
@@ -218,14 +238,10 @@ export default function NewOrder() {
                 </div>
                 <div className="border-t border-slate-100 pt-2 flex gap-2 flex-wrap">
                   {selectedService.refill && (
-                    <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-xs font-medium px-2 py-1 rounded-lg border border-emerald-200">
-                      ✓ Refill
-                    </span>
+                    <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-xs font-medium px-2 py-1 rounded-lg border border-emerald-200">✓ Refill</span>
                   )}
                   {selectedService.cancel && (
-                    <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 text-xs font-medium px-2 py-1 rounded-lg border border-blue-200">
-                      ✓ Cancel
-                    </span>
+                    <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 text-xs font-medium px-2 py-1 rounded-lg border border-blue-200">✓ Cancel</span>
                   )}
                 </div>
               </div>

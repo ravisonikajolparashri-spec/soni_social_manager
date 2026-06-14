@@ -11,7 +11,7 @@ class Service(Base):
     category = Column(String, nullable=False)
     type = Column(String, default="Default")
     rate = Column(Float, nullable=False)           # our selling price per 1000
-    original_rate = Column(Float, nullable=False)  # BluesSMM cost price per 1000
+    original_rate = Column(Float, nullable=False)  # provider cost price per 1000
     min_order = Column(Integer, default=10)
     max_order = Column(Integer, default=10000)
     refill = Column(Boolean, default=False)

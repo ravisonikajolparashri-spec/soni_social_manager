@@ -1,5 +1,5 @@
 """
-Background job: syncs order statuses from BluesSMM Panel every 5 minutes
+Background job: syncs order statuses from the provider API every 5 minutes
 for all pending/in-progress orders.
 """
 from sqlalchemy import select
