@@ -59,7 +59,7 @@ export default function AddFunds() {
             razorpay_order_id: response.razorpay_order_id,
             razorpay_payment_id: response.razorpay_payment_id,
             razorpay_signature: response.razorpay_signature,
-            amount: amountNum,
+            // amount intentionally omitted — backend uses server-stored value
           })
           setStatus({ type: 'success', message: `₹${amountNum.toFixed(2)} added to your wallet!` })
           setAmount('')

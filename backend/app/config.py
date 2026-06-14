@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str
     SECRET_KEY: str
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 10080
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
 
     SMM_API_URL: str = "https://bluesmmpanel.com/api/v2"
     SMM_API_KEY: str
@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     ALLOWED_ORIGINS: str = "http://localhost:5173,http://localhost:3000"
 
     # Disable OpenAPI docs in production (set to "false")
-    SHOW_DOCS: bool = True
+    SHOW_DOCS: bool = False
 
     @property
     def allowed_origins_list(self) -> list[str]:
