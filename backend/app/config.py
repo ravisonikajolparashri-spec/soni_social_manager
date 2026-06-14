@@ -15,6 +15,10 @@ class Settings(BaseSettings):
     ADMIN_EMAIL: str
     ADMIN_PASSWORD: str
 
+    # Razorpay payment gateway
+    RAZORPAY_KEY_ID: str = ""
+    RAZORPAY_KEY_SECRET: str = ""
+
     # Comma-separated list of allowed origins, e.g. "https://myapp.vercel.app,http://localhost:5173"
     # Also accepts "*" to allow all origins (useful for debugging)
     ALLOWED_ORIGINS: str = "http://localhost:5173,http://localhost:3000"

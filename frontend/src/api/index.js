@@ -62,6 +62,13 @@ export const ordersAPI = {
 // ── Transactions ──────────────────────────────────────────────────────────
 export const transactionsAPI = {
   list: () => api.get('/transactions'),
+  // Razorpay: step 1 — create order on backend, get order_id + key_id back
+  createRazorpayOrder: (amount) =>
+    api.post('/transactions/create-razorpay-order', { amount }),
+  // Razorpay: step 2 — verify signature and credit balance
+  verifyPayment: (data) =>
+    api.post('/transactions/verify-payment', data),
+  // Admin-only direct credit
   addFunds: (amount) => api.post('/transactions/add-funds', { amount }),
 }
 
