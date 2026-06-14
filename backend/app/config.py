@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     ADMIN_PASSWORD: str
 
     # Comma-separated list of allowed origins, e.g. "https://myapp.vercel.app,http://localhost:5173"
+    # Also accepts "*" to allow all origins (useful for debugging)
     ALLOWED_ORIGINS: str = "http://localhost:5173,http://localhost:3000"
 
     # Disable OpenAPI docs in production (set to "false")
@@ -23,7 +24,14 @@ class Settings(BaseSettings):
 
     @property
     def allowed_origins_list(self) -> list[str]:
-        return [o.strip() for o in self.ALLOWED_ORIGINS.split(",") if o.strip()]
+        # Strip surrounding quotes that Railway/Vercel dashboards sometimes add
+        raw = self.ALLOWED_ORIGINS.strip().strip('"').strip("'")
+        result = []
+        for o in raw.split(","):
+            o = o.strip().strip('"').strip("'")
+            if o:
+                result.append(o)
+        return result
 
     class Config:
         env_file = ".env"
