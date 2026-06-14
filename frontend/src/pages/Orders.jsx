@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ordersAPI } from '../api'
+import CustomSelect from '../components/CustomSelect'
 
 const STATUS_STYLES = {
   Completed:    'bg-emerald-100 text-emerald-700 border border-emerald-200',
@@ -10,7 +11,15 @@ const STATUS_STYLES = {
   Canceled:     'bg-red-100 text-red-700 border border-red-200',
 }
 
-const ALL_STATUSES = ['', 'Pending', 'In progress', 'Processing', 'Completed', 'Partial', 'Canceled']
+const STATUS_OPTIONS = [
+  { value: '', label: 'All Statuses' },
+  { value: 'Pending',      label: 'Pending' },
+  { value: 'In progress',  label: 'In Progress' },
+  { value: 'Processing',   label: 'Processing' },
+  { value: 'Completed',    label: 'Completed' },
+  { value: 'Partial',      label: 'Partial' },
+  { value: 'Canceled',     label: 'Canceled' },
+]
 
 export default function Orders() {
   const [orders, setOrders] = useState([])
@@ -95,13 +104,13 @@ export default function Orders() {
             className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
           />
         </div>
-        <select
+        <CustomSelect
+          options={STATUS_OPTIONS}
           value={filterStatus}
-          onChange={e => setFilterStatus(e.target.value)}
-          className="border border-slate-200 rounded-xl px-4 py-2.5 text-sm bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px] touch-manipulation"
-        >
-          {ALL_STATUSES.map(s => <option key={s} value={s}>{s || 'All Statuses'}</option>)}
-        </select>
+          onChange={val => setFilterStatus(val)}
+          searchable={false}
+          className="sm:w-44"
+        />
       </div>
 
       {/* Content */}

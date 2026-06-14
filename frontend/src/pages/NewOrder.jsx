@@ -1,31 +1,47 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { servicesAPI, ordersAPI } from '../api'
 import { useAuth } from '../context/AuthContext'
+import CustomSelect from '../components/CustomSelect'
 
 export default function NewOrder() {
   const { user, refreshUser } = useAuth()
   const navigate = useNavigate()
-  const [categories, setCategories] = useState([])
-  const [services, setServices] = useState([])
-  const [selectedCategory, setSelectedCategory] = useState('')
+
+  const [allServices, setAllServices] = useState([])
+  const [loadingServices, setLoadingServices] = useState(true)
   const [selectedService, setSelectedService] = useState(null)
   const [form, setForm] = useState({ link: '', quantity: '', comments: '' })
-  const [error, setError] = useState('')
+  const [error, setError]     = useState('')
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
 
+  // ── Fetch ALL services once ───────────────────────────────────────────────
   useEffect(() => {
-    servicesAPI.categories().then(r => setCategories(r.data))
+    servicesAPI.list()
+      .then(r => setAllServices(r.data))
+      .finally(() => setLoadingServices(false))
   }, [])
 
-  useEffect(() => {
-    if (selectedCategory) {
-      servicesAPI.list(selectedCategory).then(r => setServices(r.data))
-      setSelectedService(null)
-      setForm(f => ({ ...f, quantity: '' }))
-    }
-  }, [selectedCategory])
+  // ── Group & sort by category ──────────────────────────────────────────────
+  const groupedOptions = useMemo(() => {
+    const map = {}
+    allServices.forEach(s => {
+      if (!map[s.category]) map[s.category] = []
+      map[s.category].push({
+        value: s.id,
+        label: s.name,
+        meta: s,                    // full service object attached
+      })
+    })
+    // Sort categories A→Z, services within each category A→Z
+    return Object.keys(map)
+      .sort((a, b) => a.localeCompare(b))
+      .map(cat => ({
+        group: cat,
+        items: map[cat].sort((a, b) => a.label.localeCompare(b.label)),
+      }))
+  }, [allServices])
 
   const charge = selectedService && form.quantity
     ? ((selectedService.rate / 1000) * Number(form.quantity)).toFixed(4)
@@ -37,7 +53,11 @@ export default function NewOrder() {
     e.preventDefault()
     setError(''); setSuccess(''); setLoading(true)
     try {
-      const payload = { service_id: selectedService.id, link: form.link, quantity: Number(form.quantity) }
+      const payload = {
+        service_id: selectedService.id,
+        link: form.link,
+        quantity: Number(form.quantity),
+      }
       if (form.comments) payload.comments = form.comments
       await ordersAPI.create(payload)
       await refreshUser()
@@ -56,74 +76,98 @@ export default function NewOrder() {
       {/* Header */}
       <div>
         <h1 className="text-xl sm:text-2xl font-bold text-slate-800">New Order</h1>
-        <p className="text-slate-500 text-xs sm:text-sm mt-1">Select a service and fill in the details below</p>
+        <p className="text-slate-500 text-xs sm:text-sm mt-1">
+          Select a service and fill in the details below
+        </p>
       </div>
 
-      {/* Balance pill — mobile only (quick reference) */}
+      {/* Balance pill — mobile only */}
       <div className="flex items-center gap-2 sm:hidden">
         <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2">
           <span className="text-xs text-emerald-600 font-medium">Balance</span>
-          <span className="text-base font-bold text-emerald-700">₹{user?.balance?.toFixed(2) ?? '0.00'}</span>
+          <span className="text-base font-bold text-emerald-700">
+            ₹{user?.balance?.toFixed(2) ?? '0.00'}
+          </span>
         </div>
       </div>
 
-      {/* Main layout: stacked mobile → side-by-side lg */}
+      {/* Main layout */}
       <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
 
-        {/* ── Form ──────────────────────────────────────────────────── */}
+        {/* ── Form ────────────────────────────────────────────────────────── */}
         <div className="flex-1 bg-white rounded-2xl shadow-sm border border-slate-100 p-4 sm:p-6">
 
           {/* Alerts */}
           {error && (
             <div className="flex items-start gap-3 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-5 text-sm">
-              <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
               {error}
             </div>
           )}
           {success && (
             <div className="flex items-start gap-3 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl mb-5 text-sm">
-              <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
               {success}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
 
-            {/* Category */}
+            {/* ── Service (grouped custom dropdown) ─────────────────────── */}
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">Category</label>
-              <select
-                value={selectedCategory}
-                onChange={e => setSelectedCategory(e.target.value)}
-                required
-                className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm min-h-[44px] touch-manipulation"
-              >
-                <option value="">Choose a category…</option>
-                {categories.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
+              <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                Service
+                {loadingServices && (
+                  <span className="ml-2 text-xs font-normal text-slate-400">Loading…</span>
+                )}
+              </label>
+              <CustomSelect
+                grouped
+                options={groupedOptions}
+                value={selectedService?.id ?? ''}
+                onChange={(val, opt) => {
+                  setSelectedService(opt.meta)
+                  setForm(f => ({ ...f, quantity: '' }))
+                }}
+                placeholder={loadingServices ? 'Loading services…' : 'Search and choose a service…'}
+                disabled={loadingServices}
+                renderTrigger={(selected, placeholder) =>
+                  selected ? (
+                    <span className="flex items-center gap-2 min-w-0">
+                      <span className="shrink-0 text-[10px] font-bold bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded uppercase tracking-wide">
+                        {selected.meta.category.slice(0, 2)}
+                      </span>
+                      <span className="truncate text-slate-800 text-sm">{selected.label}</span>
+                      <span className="shrink-0 text-xs font-semibold text-emerald-600 ml-auto">
+                        ₹{selected.meta.rate}/1k
+                      </span>
+                    </span>
+                  ) : (
+                    <span className="text-slate-400 text-sm">{placeholder}</span>
+                  )
+                }
+                renderOption={(opt, isSelected) => (
+                  <span className="flex items-start justify-between gap-2">
+                    <span className={`text-sm leading-snug ${isSelected ? 'text-blue-700 font-medium' : 'text-slate-700'}`}>
+                      {opt.label}
+                    </span>
+                    <span className="shrink-0 text-xs font-semibold text-emerald-600 mt-0.5">
+                      ₹{opt.meta.rate}/1k
+                    </span>
+                  </span>
+                )}
+              />
             </div>
 
-            {/* Service */}
-            {selectedCategory && (
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5">Service</label>
-                <select
-                  value={selectedService?.id || ''}
-                  onChange={e => setSelectedService(services.find(s => s.id === Number(e.target.value)) || null)}
-                  required
-                  className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm min-h-[44px] touch-manipulation"
-                >
-                  <option value="">Choose a service…</option>
-                  {services.map(s => (
-                    <option key={s.id} value={s.id}>#{s.external_id} — {s.name} (₹{s.rate}/1k)</option>
-                  ))}
-                </select>
-              </div>
-            )}
-
-            {/* Link */}
+            {/* ── Link ──────────────────────────────────────────────────── */}
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">Link / URL</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                Link / URL
+              </label>
               <input
                 type="url"
                 required
@@ -134,7 +178,7 @@ export default function NewOrder() {
               />
             </div>
 
-            {/* Quantity */}
+            {/* ── Quantity ──────────────────────────────────────────────── */}
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">
                 Quantity
@@ -147,6 +191,7 @@ export default function NewOrder() {
               <input
                 type="number"
                 required
+                inputMode="numeric"
                 min={selectedService?.min_order || 1}
                 max={selectedService?.max_order || 999999}
                 value={form.quantity}
@@ -156,7 +201,7 @@ export default function NewOrder() {
               />
             </div>
 
-            {/* Comments */}
+            {/* ── Comments ──────────────────────────────────────────────── */}
             {selectedService?.type === 'Custom Comments' && (
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1.5">
@@ -172,15 +217,21 @@ export default function NewOrder() {
               </div>
             )}
 
-            {/* Insufficient balance warning */}
+            {/* ── Insufficient balance warning ───────────────────────────── */}
             {insufficientBalance && (
               <div className="flex items-start gap-2 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
-                <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <span>Insufficient balance. You have <strong>₹{user.balance.toFixed(4)}</strong> but need <strong>₹{charge}</strong>.</span>
+                <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>
+                  Insufficient balance. You have{' '}
+                  <strong>₹{user.balance.toFixed(4)}</strong> but need{' '}
+                  <strong>₹{charge}</strong>.
+                </span>
               </div>
             )}
 
-            {/* Charge preview on mobile (service info panel is hidden) */}
+            {/* ── Charge preview — mobile only ───────────────────────────── */}
             {charge && (
               <div className="lg:hidden bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
                 <p className="text-xs text-blue-600 font-medium mb-0.5">Total Charge</p>
@@ -188,7 +239,7 @@ export default function NewOrder() {
               </div>
             )}
 
-            {/* Submit */}
+            {/* ── Submit ────────────────────────────────────────────────── */}
             <button
               type="submit"
               disabled={loading || !selectedService || insufficientBalance}
@@ -196,12 +247,17 @@ export default function NewOrder() {
             >
               {loading ? (
                 <>
-                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/></svg>
+                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                  </svg>
                   Placing order…
                 </>
               ) : (
                 <>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
                   {charge ? `Place Order — ₹${charge}` : 'Place Order'}
                 </>
               )}
@@ -209,7 +265,7 @@ export default function NewOrder() {
           </form>
         </div>
 
-        {/* ── Service info panel — hidden on mobile ─────────────────── */}
+        {/* ── Service info panel — desktop only ───────────────────────────── */}
         <div className="hidden lg:flex lg:flex-col gap-4 w-72 xl:w-80 shrink-0">
 
           {/* Balance */}
@@ -218,11 +274,17 @@ export default function NewOrder() {
             <p className="text-2xl font-bold text-emerald-600">₹{user?.balance?.toFixed(2) ?? '0.00'}</p>
           </div>
 
-          {/* Service details */}
+          {/* Service detail card */}
           {selectedService ? (
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 space-y-3">
               <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">Service Details</p>
+
+              <div className="inline-flex items-center gap-1.5 bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md text-xs font-semibold">
+                {selectedService.category}
+              </div>
+
               <p className="text-sm font-semibold text-slate-800 leading-snug">{selectedService.name}</p>
+
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between text-slate-600">
                   <span>Rate</span>
@@ -238,13 +300,18 @@ export default function NewOrder() {
                 </div>
                 <div className="border-t border-slate-100 pt-2 flex gap-2 flex-wrap">
                   {selectedService.refill && (
-                    <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-xs font-medium px-2 py-1 rounded-lg border border-emerald-200">✓ Refill</span>
+                    <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-xs font-medium px-2 py-1 rounded-lg border border-emerald-200">
+                      ✓ Refill
+                    </span>
                   )}
                   {selectedService.cancel && (
-                    <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 text-xs font-medium px-2 py-1 rounded-lg border border-blue-200">✓ Cancel</span>
+                    <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 text-xs font-medium px-2 py-1 rounded-lg border border-blue-200">
+                      ✓ Cancel
+                    </span>
                   )}
                 </div>
               </div>
+
               {charge && (
                 <div className="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
                   <p className="text-xs text-blue-600 font-medium mb-0.5">Total Charge</p>
@@ -254,7 +321,9 @@ export default function NewOrder() {
             </div>
           ) : (
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 text-center">
-              <svg className="w-10 h-10 text-slate-200 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>
+              <svg className="w-10 h-10 text-slate-200 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+              </svg>
               <p className="text-sm text-slate-400">Select a service to see details</p>
             </div>
           )}
