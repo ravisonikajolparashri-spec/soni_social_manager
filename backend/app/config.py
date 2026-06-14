@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 10080
 
-    SMM_API_URL: str = "https://easysmmpanel.com/api/v2"
+    SMM_API_URL: str = "https://bluesmmpanel.com/api/v2"
     SMM_API_KEY: str
 
     APP_NAME: str = "SMM Panel"

@@ -39,7 +39,7 @@ async def place_order(
     if current_user.balance < charge:
         raise HTTPException(status_code=402, detail=f"Insufficient balance. Required: ${charge:.4f}")
 
-    # Place order on EasySMM
+    # Place order on BluesSMM Panel
     try:
         smm_response = await smm_client.add_order(
             service_id=service.external_id,

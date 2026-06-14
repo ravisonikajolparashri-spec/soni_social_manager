@@ -8,7 +8,7 @@ class Order(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     service_id = Column(Integer, ForeignKey("services.id"), nullable=False)
-    external_order_id = Column(Integer, nullable=True, index=True)  # EasySMM order ID
+    external_order_id = Column(Integer, nullable=True, index=True)  # BluesSMM Panel order ID
     link = Column(String, nullable=False)
     quantity = Column(Integer, nullable=False)
     charge = Column(Float, nullable=False)        # amount deducted from balance

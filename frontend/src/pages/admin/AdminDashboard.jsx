@@ -1,6 +1,15 @@
 import { useEffect, useState } from 'react'
 import { adminAPI } from '../../api'
 
+const statCards = (stats) => [
+  { label: 'Total Users',     value: stats.total_users,                       color: 'text-blue-600',   bg: 'bg-blue-50',   border: 'border-blue-100',   icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg> },
+  { label: 'Total Orders',    value: stats.total_orders,                       color: 'text-violet-600', bg: 'bg-violet-50', border: 'border-violet-100', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg> },
+  { label: 'Total Revenue',   value: `$${stats.total_revenue.toFixed(2)}`,    color: 'text-emerald-600',bg: 'bg-emerald-50', border: 'border-emerald-100',icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
+  { label: 'Active Services', value: stats.active_services,                   color: 'text-indigo-600', bg: 'bg-indigo-50', border: 'border-indigo-100', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg> },
+  { label: 'Pending Orders',  value: stats.pending_orders,                    color: 'text-amber-600',  bg: 'bg-amber-50',  border: 'border-amber-100',  icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
+  { label: 'API Balance',     value: `$${stats.api_balance}`,                 color: 'text-teal-600',   bg: 'bg-teal-50',   border: 'border-teal-100',   icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg> },
+]
+
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -9,32 +18,39 @@ export default function AdminDashboard() {
     adminAPI.stats().then(r => setStats(r.data)).finally(() => setLoading(false))
   }, [])
 
-  const cards = stats ? [
-    { label: 'Total Users', value: stats.total_users, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: 'Total Orders', value: stats.total_orders, color: 'text-purple-600', bg: 'bg-purple-50' },
-    { label: 'Total Revenue', value: `$${stats.total_revenue.toFixed(2)}`, color: 'text-green-600', bg: 'bg-green-50' },
-    { label: 'Active Services', value: stats.active_services, color: 'text-indigo-600', bg: 'bg-indigo-50' },
-    { label: 'Pending Orders', value: stats.pending_orders, color: 'text-yellow-600', bg: 'bg-yellow-50' },
-    { label: 'API Balance', value: `$${stats.api_balance}`, color: 'text-teal-600', bg: 'bg-teal-50' },
-  ] : []
-
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-2">Admin Overview</h2>
-      <p className="text-gray-500 text-sm mb-6">Panel statistics and EasySMM API balance</p>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-violet-600 to-violet-700 rounded-2xl px-6 py-5 text-white shadow-lg shadow-violet-200">
+        <p className="text-violet-200 text-sm font-medium mb-1">Admin Panel</p>
+        <h1 className="text-2xl font-bold">Overview</h1>
+        <p className="text-violet-200 text-sm mt-1">BluesSMM Panel API balance and platform statistics</p>
+      </div>
 
       {loading ? (
-        <p className="text-gray-400">Loading stats...</p>
-      ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {cards.map(c => (
-            <div key={c.label} className={`${c.bg} rounded-xl p-5 border border-white`}>
-              <p className="text-gray-500 text-sm">{c.label}</p>
-              <p className={`text-3xl font-bold mt-1 ${c.color}`}>{c.value}</p>
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="bg-white rounded-2xl p-5 border border-slate-100 animate-pulse">
+              <div className="h-3 bg-slate-100 rounded w-24 mb-3" />
+              <div className="h-8 bg-slate-100 rounded w-16" />
             </div>
           ))}
         </div>
-      )}
+      ) : stats ? (
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {statCards(stats).map(c => (
+            <div key={c.label} className={`${c.bg} rounded-2xl p-5 border ${c.border}`}>
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">{c.label}</p>
+                  <p className={`text-3xl font-bold ${c.color}`}>{c.value}</p>
+                </div>
+                <div className={`${c.color} opacity-60`}>{c.icon}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : null}
     </div>
   )
 }
