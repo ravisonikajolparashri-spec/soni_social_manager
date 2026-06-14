@@ -23,7 +23,7 @@ export default function AdminUsers() {
     try {
       await adminAPI.addFundsToUser(fundModal.id, Number(fundAmount))
       setUsers(prev => prev.map(u => u.id === fundModal.id ? { ...u, balance: u.balance + Number(fundAmount) } : u))
-      setMessage({ text: `Added $${fundAmount} to ${fundModal.username}'s balance`, type: 'success' })
+      setMessage({ text: `Added ₹${fundAmount} to ${fundModal.username}'s balance`, type: 'success' })
       setFundModal(null); setFundAmount('')
     } catch (err) {
       setMessage({ text: err.response?.data?.detail || 'Failed to add funds', type: 'error' })
@@ -174,7 +174,7 @@ export default function AdminUsers() {
             </div>
             <form onSubmit={handleAddFunds} className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5">Amount (USD)</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5">Amount (₹)</label>
                 <input
                   type="number"
                   step="0.01"

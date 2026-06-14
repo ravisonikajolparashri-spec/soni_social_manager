@@ -24,7 +24,7 @@ export default function AdminDashboard() {
       <div className="bg-gradient-to-r from-violet-600 to-violet-700 rounded-2xl px-6 py-5 text-white shadow-lg shadow-violet-200">
         <p className="text-violet-200 text-sm font-medium mb-1">Admin Panel</p>
         <h1 className="text-2xl font-bold">Overview</h1>
-        <p className="text-violet-200 text-sm mt-1">BluesSMM Panel API balance and platform statistics</p>
+        <p className="text-violet-200 text-sm mt-1">Viral SMM Panel statistics and platform statistics</p>
       </div>
 
       {loading ? (

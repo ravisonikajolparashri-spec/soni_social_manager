@@ -114,7 +114,7 @@ async def sync_services(db: AsyncSession = Depends(get_db), _: User = Depends(ge
         existing = result.scalar_one_or_none()
 
         original_rate = float(svc.get("rate", 0))
-        markup_rate = round(original_rate * 1.3, 4)  # 30% default markup
+        markup_rate = round(original_rate * 1.7, 4)  # 70% markup
 
         if existing:
             existing.name = svc.get("name", existing.name)

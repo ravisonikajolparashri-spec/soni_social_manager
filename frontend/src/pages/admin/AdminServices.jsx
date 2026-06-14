@@ -51,7 +51,7 @@ export default function AdminServices() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold text-slate-800">Services</h1>
-          <p className="text-slate-500 text-sm mt-0.5">{services.length} total services from BluesSMM Panel</p>
+          <p className="text-slate-500 text-sm mt-0.5">{services.length} total services available</p>
         </div>
         <button
           onClick={handleSync}
@@ -59,7 +59,7 @@ export default function AdminServices() {
           className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-sm"
         >
           <svg className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-          {syncing ? 'Syncing...' : 'Sync from BluesSMM'}
+          {syncing ? 'Syncing...' : 'Sync Services'}
         </button>
       </div>
 
@@ -173,7 +173,7 @@ export default function AdminServices() {
             <h3 className="font-bold text-lg text-slate-800 mb-1">Edit Selling Rate</h3>
             <p className="text-slate-400 text-sm mb-1 truncate">{editModal.name}</p>
             <p className="text-xs text-slate-400 mb-5 bg-slate-50 px-3 py-2 rounded-lg inline-block">
-              BluesSMM cost: <strong className="text-slate-600">₹{editModal.original_rate}/1k</strong>
+              API cost: <strong className="text-slate-600">₹{editModal.original_rate}/1k</strong>
             </p>
             <form onSubmit={handleEditRate} className="space-y-4">
               <div>
