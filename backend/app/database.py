@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.orm import DeclarativeBase
 from app.config import settings
+import os
 
 # Railway (and most providers) give postgresql:// — asyncpg needs postgresql+asyncpg://
 _db_url = settings.DATABASE_URL
@@ -9,7 +10,20 @@ if _db_url.startswith("postgresql://"):
 elif _db_url.startswith("postgres://"):
     _db_url = _db_url.replace("postgres://", "postgresql+asyncpg://", 1)
 
-engine = create_async_engine(_db_url, echo=False)
+# Railway Postgres requires SSL. Add ?ssl=require if not already in the URL.
+# Skip SSL only when explicitly disabled (local dev without SSL).
+_require_ssl = os.getenv("DB_SSL", "true").lower() != "false"
+if _require_ssl and "ssl=" not in _db_url and "sslmode=" not in _db_url:
+    _db_url += ("&" if "?" in _db_url else "?") + "ssl=require"
+
+engine = create_async_engine(
+    _db_url,
+    echo=False,
+    pool_pre_ping=True,       # test connection before use — detects stale connections
+    pool_recycle=300,          # recycle connections every 5 min
+    pool_size=5,
+    max_overflow=10,
+)
 AsyncSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
 
 
