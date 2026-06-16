@@ -23,9 +23,9 @@ const faqGroups = [
     section: 'Orders & Delivery',
     items: [
       { q: 'How fast will my order be delivered?', a: 'Most orders start within a few minutes of being placed. Delivery speed depends on the specific service — some deliver instantly, others gradually over hours or days to appear more natural. The estimated delivery time is shown on each service description.' },
-      { q: 'My order is stuck on "Pending". What should I do?', a: <>Orders usually start within 0–30 minutes. If your order is still Pending after 1 hour, please <Link to="/contact" className="text-blue-600 font-medium hover:underline">contact us</Link> with your Order ID and we'll investigate immediately.</> },
+      { q: 'My order is stuck on "Pending". What should I do?', a: <>Orders usually start within 0–30 minutes. If your order is still Pending after 1 hour, please <Link to="/contact" className="text-brand-600 font-medium hover:underline">contact us</Link> with your Order ID and we'll investigate immediately.</> },
       { q: 'Can I cancel an order after placing it?', a: 'Orders that are still in Pending status may be cancellable — use the Cancel button on the Orders page. Once an order moves to In Progress or Processing, it cannot be cancelled as it has already been submitted to the provider.' },
-      { q: "What happens if my order doesn't complete fully?", a: <>If your order shows as <strong>Partial</strong>, it means only part of the quantity was delivered. You can request a free refill using the Refill button on the Orders page. If a refill isn't available, we will refund the undelivered portion to your wallet. See our <Link to="/refund" className="text-blue-600 font-medium hover:underline">Refund Policy</Link> for details.</> },
+      { q: "What happens if my order doesn't complete fully?", a: <>If your order shows as <strong>Partial</strong>, it means only part of the quantity was delivered. You can request a free refill using the Refill button on the Orders page. If a refill isn't available, we will refund the undelivered portion to your wallet. See our <Link to="/refund" className="text-brand-600 font-medium hover:underline">Refund Policy</Link> for details.</> },
       { q: 'My followers/likes dropped after delivery. Why?', a: 'Social media platforms occasionally run purges of inactive or bot accounts, which can cause a small drop after delivery. Services marked with ✓ Refill cover this — you can request a refill at no extra charge. We recommend choosing refill-eligible services for better long-term results.' },
       { q: 'Do I need to make my account public?', a: 'Yes. Your account or post must be public at the time of ordering and throughout the delivery period. Orders placed for private accounts cannot be delivered and are non-refundable.' },
     ],
@@ -36,7 +36,7 @@ const faqGroups = [
       { q: 'How do I add funds to my wallet?', a: 'Go to Add Funds in your dashboard, scan the UPI QR code shown there with any UPI app, and complete the payment. Then submit the transaction/UTR ID (and optionally a screenshot) — our team reviews and credits your wallet shortly after.' },
       { q: 'What payment methods are accepted?', list: ['UPI (GPay, PhonePe, Paytm, BHIM, etc.) via QR code scan'] },
       { q: 'Is my payment information secure?', a: 'Yes. Payments go directly from your UPI app to our account — we never see or store your card number, CVV, or UPI PIN. We only collect the transaction/UTR ID you submit for verification. Our site also uses HTTPS encryption and strict security headers on all pages.' },
-      { q: 'Can I get a refund on my wallet deposit?', a: <>Wallet deposits cannot be refunded to your original payment method. However, your wallet balance never expires and can be used for any order at any time. If an order fails to deliver, the charge is refunded back to your wallet. See our full <Link to="/refund" className="text-blue-600 font-medium hover:underline">Refund Policy</Link>.</> },
+      { q: 'Can I get a refund on my wallet deposit?', a: <>Wallet deposits cannot be refunded to your original payment method. However, your wallet balance never expires and can be used for any order at any time. If an order fails to deliver, the charge is refunded back to your wallet. See our full <Link to="/refund" className="text-brand-600 font-medium hover:underline">Refund Policy</Link>.</> },
       { q: 'What is the minimum deposit amount?', a: 'The minimum deposit is ₹1, and single transactions are capped at ₹5,00,000.' },
       { q: 'How long does deposit approval take?', a: 'Most deposits are reviewed and credited to your wallet within a few hours. Make sure the transaction/UTR ID you submit exactly matches your payment confirmation to avoid delays.' },
     ],
@@ -45,8 +45,8 @@ const faqGroups = [
     section: 'Account',
     items: [
       { q: 'Is registration free?', a: 'Yes, creating an account is completely free. You only pay when you add funds to your wallet and place orders.' },
-      { q: 'I forgot my password. How do I reset it?', a: <>Password reset is currently handled manually. <Link to="/contact" className="text-blue-600 font-medium hover:underline">Contact us</Link> from your registered email address and we'll reset it for you within a few hours.</> },
-      { q: 'How do I contact support?', a: <><Link to="/contact" className="text-blue-600 font-medium hover:underline">Reach out here</Link>. We typically respond within 24 hours. Please include your Order ID or registered email in your message for faster resolution.</> },
+      { q: 'I forgot my password. How do I reset it?', a: <>Password reset is currently handled manually. <Link to="/contact" className="text-brand-600 font-medium hover:underline">Contact us</Link> from your registered email address and we'll reset it for you within a few hours.</> },
+      { q: 'How do I contact support?', a: <><Link to="/contact" className="text-brand-600 font-medium hover:underline">Reach out here</Link>. We typically respond within 24 hours. Please include your Order ID or registered email in your message for faster resolution.</> },
     ],
   },
 ]
@@ -85,12 +85,12 @@ export default function Faq() {
           </div>
         ))}
 
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl px-5 sm:px-8 py-6 sm:py-8 text-center text-white">
+        <div className="bg-gradient-to-r from-brand-600 to-brand-700 rounded-2xl px-5 sm:px-8 py-6 sm:py-8 text-center text-white">
           <h2 className="text-lg sm:text-xl font-bold mb-1.5">Still have questions?</h2>
-          <p className="text-blue-200 text-sm mb-5">Our support team is here to help you 24/7.</p>
+          <p className="text-brand-200 text-sm mb-5">Our support team is here to help you 24/7.</p>
           <Link
             to="/contact"
-            className="inline-flex items-center justify-center bg-white text-blue-700 hover:bg-blue-50 px-6 py-2.5 rounded-xl text-sm font-bold transition-colors min-h-[44px]"
+            className="inline-flex items-center justify-center bg-white text-brand-700 hover:bg-brand-50 px-6 py-2.5 rounded-xl text-sm font-bold transition-colors min-h-[44px]"
           >
             Contact Support
           </Link>

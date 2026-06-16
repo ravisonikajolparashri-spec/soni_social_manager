@@ -142,7 +142,7 @@ export default function AdminPayments() {
           </div>
           <div className="space-y-2">
             <p className="text-xs text-slate-500 max-w-sm">Upload the UPI/bank QR code image. This is shown to users on the Add Funds page so they can scan and pay.</p>
-            <label className="inline-flex items-center gap-2 text-xs font-semibold bg-blue-100 text-blue-700 px-3.5 py-2 rounded-lg hover:bg-blue-200 cursor-pointer transition-colors touch-manipulation">
+            <label className="inline-flex items-center gap-2 text-xs font-semibold bg-brand-100 text-brand-700 px-3.5 py-2 rounded-lg hover:bg-brand-200 cursor-pointer transition-colors touch-manipulation">
               {qrUploading ? 'Uploading…' : 'Upload New QR'}
               <input type="file" accept="image/*" className="hidden" disabled={qrUploading} onChange={handleQrUpload} />
             </label>
@@ -243,7 +243,7 @@ export default function AdminPayments() {
                   value={note}
                   onChange={e => setNote(e.target.value)}
                   rows={2}
-                  className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm"
                   placeholder="Visible to the user"
                 />
               </div>

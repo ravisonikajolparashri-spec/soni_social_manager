@@ -131,8 +131,8 @@ export default function AddFunds() {
       </div>
 
       {/* Balance card */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl px-5 sm:px-6 py-4 sm:py-5 text-white shadow-lg shadow-blue-200">
-        <p className="text-blue-200 text-xs sm:text-sm font-medium mb-1">Current Balance</p>
+      <div className="bg-gradient-to-r from-brand-600 to-brand-700 rounded-2xl px-5 sm:px-6 py-4 sm:py-5 text-white shadow-lg shadow-brand-200">
+        <p className="text-brand-200 text-xs sm:text-sm font-medium mb-1">Current Balance</p>
         <p className="text-3xl sm:text-4xl font-bold">₹{user?.balance?.toFixed(2) ?? '0.00'}</p>
       </div>
 
@@ -182,7 +182,7 @@ export default function AddFunds() {
               placeholder="Enter amount"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="w-full pl-9 pr-4 py-3 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm min-h-[44px]"
+              className="w-full pl-9 pr-4 py-3 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm min-h-[44px]"
             />
           </div>
         </div>
@@ -194,7 +194,7 @@ export default function AddFunds() {
             placeholder="e.g. 123456789012"
             value={transactionId}
             onChange={(e) => setTransactionId(e.target.value)}
-            className="w-full px-4 py-3 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm min-h-[44px]"
+            className="w-full px-4 py-3 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm min-h-[44px]"
           />
           <p className="text-xs text-slate-400 mt-1.5">Found in your UPI app's payment confirmation / history</p>
         </div>
@@ -205,7 +205,7 @@ export default function AddFunds() {
             type="file"
             accept="image/*"
             onChange={handleScreenshotChange}
-            className="w-full text-sm text-slate-600 border border-slate-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full text-sm text-slate-600 border border-slate-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
           {screenshotName && <p className="text-xs text-emerald-600 mt-1.5">Attached: {screenshotName}</p>}
         </div>
@@ -213,7 +213,7 @@ export default function AddFunds() {
         <button
           type="submit"
           disabled={loading || amountNum < 1 || !transactionId.trim()}
-          className="w-full py-3.5 rounded-xl font-semibold text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 text-sm min-h-[48px] touch-manipulation shadow-sm"
+          className="w-full py-3.5 rounded-xl font-semibold text-white bg-brand-600 hover:bg-brand-700 active:bg-brand-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 text-sm min-h-[48px] touch-manipulation shadow-sm"
         >
           {loading ? (
             <>

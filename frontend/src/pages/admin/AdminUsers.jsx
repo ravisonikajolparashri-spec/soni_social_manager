@@ -64,7 +64,7 @@ export default function AdminUsers() {
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search by username, email or ID…"
-          className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
+          className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 min-h-[44px]"
         />
       </div>
 
@@ -84,7 +84,7 @@ export default function AdminUsers() {
               <div key={u.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 space-y-3">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold shrink-0">
+                    <div className="w-9 h-9 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center text-sm font-bold shrink-0">
                       {u.username.slice(0, 1).toUpperCase()}
                     </div>
                     <div className="min-w-0">
@@ -144,7 +144,7 @@ export default function AdminUsers() {
                       <td className="px-4 py-3.5"><span className="font-mono text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md">#{u.id}</span></td>
                       <td className="px-4 py-3.5">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-7 h-7 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold shrink-0">
+                          <div className="w-7 h-7 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center text-xs font-bold shrink-0">
                             {u.username.slice(0, 1).toUpperCase()}
                           </div>
                           <div>
@@ -193,7 +193,7 @@ export default function AdminUsers() {
           <div className="bg-white rounded-t-3xl sm:rounded-2xl p-6 w-full sm:max-w-sm shadow-2xl safe-area-bottom">
             <h3 className="font-bold text-lg text-slate-800 mb-1">Add Funds</h3>
             <div className="flex items-center gap-2.5 bg-slate-50 rounded-xl px-3 py-2.5 mb-5">
-              <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold shrink-0">
+              <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center text-xs font-bold shrink-0">
                 {fundModal.username.slice(0, 1).toUpperCase()}
               </div>
               <div>
@@ -212,7 +212,7 @@ export default function AdminUsers() {
                   required
                   value={fundAmount}
                   onChange={e => setFundAmount(e.target.value)}
-                  className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm min-h-[44px]"
+                  className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm min-h-[44px]"
                   placeholder="e.g. 100.00"
                 />
               </div>

@@ -25,13 +25,13 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 flex items-center justify-center px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-brand-950 flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-sm sm:max-w-md">
 
         {/* Logo */}
         <div className="text-center mb-6 sm:mb-8">
           <Link to="/" className="inline-flex items-center gap-2.5 mb-3">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-sm sm:text-base">V</div>
+            <img src="/logo-icon.png" alt="Viral SMM Panel" className="w-9 h-9 sm:w-10 sm:h-10 object-contain" />
             <span className="text-xl sm:text-2xl font-bold text-white">Viral SMM Panel</span>
           </Link>
           <p className="text-slate-400 text-sm">Sign in to your account</p>
@@ -56,7 +56,7 @@ export default function Login() {
                 autoComplete="email"
                 value={form.email}
                 onChange={e => setForm({ ...form, email: e.target.value })}
-                className="w-full bg-slate-700/60 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-colors min-h-[44px]"
+                className="w-full bg-slate-700/60 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm transition-colors min-h-[44px]"
                 placeholder="you@example.com"
               />
             </div>
@@ -68,14 +68,14 @@ export default function Login() {
                 autoComplete="current-password"
                 value={form.password}
                 onChange={e => setForm({ ...form, password: e.target.value })}
-                className="w-full bg-slate-700/60 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-colors min-h-[44px]"
+                className="w-full bg-slate-700/60 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm transition-colors min-h-[44px]"
                 placeholder="••••••••"
               />
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 text-white font-semibold py-3 rounded-xl transition-colors text-sm shadow-sm shadow-blue-900/50 flex items-center justify-center gap-2 min-h-[48px] touch-manipulation mt-1"
+              className="w-full bg-brand-600 hover:bg-brand-700 active:bg-brand-800 disabled:opacity-50 text-white font-semibold py-3 rounded-xl transition-colors text-sm shadow-sm shadow-brand-900/50 flex items-center justify-center gap-2 min-h-[48px] touch-manipulation mt-1"
             >
               {loading ? (
                 <>
@@ -88,7 +88,7 @@ export default function Login() {
 
           <p className="text-center text-slate-500 text-sm mt-6">
             Don't have an account?{' '}
-            <Link to="/register" className="text-blue-400 hover:text-blue-300 font-medium transition-colors">Sign up free</Link>
+            <Link to="/register" className="text-brand-400 hover:text-brand-300 font-medium transition-colors">Sign up free</Link>
           </p>
         </div>
 

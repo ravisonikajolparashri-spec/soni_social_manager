@@ -68,14 +68,14 @@ export default function Contact() {
                 href={c.href}
                 target="_blank"
                 rel="noreferrer"
-                className="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-5 hover:border-blue-300 hover:bg-blue-50/40 transition-colors touch-manipulation"
+                className="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-5 hover:border-brand-300 hover:bg-brand-50/40 transition-colors touch-manipulation"
               >
                 <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center mb-3 ${c.iconBg}`}>
                   <c.Icon className="w-5 h-5" />
                 </div>
                 <h3 className="text-sm font-bold text-slate-900 mb-1">{c.title}</h3>
                 <p className="text-xs sm:text-sm text-slate-500 mb-2">{c.desc}</p>
-                <span className="text-sm font-semibold text-blue-600 break-all">{c.label}</span>
+                <span className="text-sm font-semibold text-brand-600 break-all">{c.label}</span>
               </a>
             ))}
           </div>
@@ -87,7 +87,7 @@ export default function Contact() {
             If your question is about an order, payment, refund, or account, please include your{' '}
             <strong className="text-slate-800">Order ID</strong> or <strong className="text-slate-800">registered email</strong>{' '}
             — this helps us resolve things faster. Many common questions are already answered in our{' '}
-            <Link to="/faq" className="text-blue-600 font-medium hover:underline">FAQ</Link>.
+            <Link to="/faq" className="text-brand-600 font-medium hover:underline">FAQ</Link>.
             {user && (
               <>
                 {' '}You're signed in as <strong className="text-slate-800">{user.username}</strong> ({user.email}) — feel free to mention this when you write in.
@@ -96,15 +96,15 @@ export default function Contact() {
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl px-5 sm:px-8 py-6 sm:py-8 text-center text-white">
+        <div className="bg-gradient-to-r from-brand-600 to-brand-700 rounded-2xl px-5 sm:px-8 py-6 sm:py-8 text-center text-white">
           <h2 className="text-lg sm:text-xl font-bold mb-1.5">Still need help?</h2>
-          <p className="text-blue-200 text-sm mb-5">Our support team is here for you 24/7.</p>
+          <p className="text-brand-200 text-sm mb-5">Our support team is here for you 24/7.</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <a
               href={WHATSAPP_URL}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center justify-center gap-2 bg-white text-blue-700 hover:bg-blue-50 px-6 py-2.5 rounded-xl text-sm font-bold transition-colors min-h-[44px] w-full sm:w-auto"
+              className="inline-flex items-center justify-center gap-2 bg-white text-brand-700 hover:bg-brand-50 px-6 py-2.5 rounded-xl text-sm font-bold transition-colors min-h-[44px] w-full sm:w-auto"
             >
               <WhatsAppIcon className="w-4 h-4" />
               Message on WhatsApp

@@ -152,7 +152,7 @@ export default function NewOrder() {
                 }
                 renderOption={(opt, isSelected) => (
                   <span className="flex items-start justify-between gap-2">
-                    <span className={`text-sm leading-snug ${isSelected ? 'text-blue-700 font-medium' : 'text-slate-700'}`}>
+                    <span className={`text-sm leading-snug ${isSelected ? 'text-brand-700 font-medium' : 'text-slate-700'}`}>
                       {opt.label}
                     </span>
                     <span className="shrink-0 text-xs font-semibold text-emerald-600 mt-0.5">
@@ -173,7 +173,7 @@ export default function NewOrder() {
                 required
                 value={form.link}
                 onChange={e => setForm({ ...form, link: e.target.value })}
-                className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm min-h-[44px]"
+                className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm min-h-[44px]"
                 placeholder="https://instagram.com/yourprofile"
               />
             </div>
@@ -196,7 +196,7 @@ export default function NewOrder() {
                 max={selectedService?.max_order || 999999}
                 value={form.quantity}
                 onChange={e => setForm({ ...form, quantity: e.target.value })}
-                className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm min-h-[44px]"
+                className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm min-h-[44px]"
                 placeholder="e.g. 1000"
               />
             </div>
@@ -211,7 +211,7 @@ export default function NewOrder() {
                   value={form.comments}
                   onChange={e => setForm({ ...form, comments: e.target.value })}
                   rows={3}
-                  className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm resize-none"
+                  className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm resize-none"
                   placeholder="One comment per line"
                 />
               </div>
@@ -233,9 +233,9 @@ export default function NewOrder() {
 
             {/* ── Charge preview — mobile only ───────────────────────────── */}
             {charge && (
-              <div className="lg:hidden bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
-                <p className="text-xs text-blue-600 font-medium mb-0.5">Total Charge</p>
-                <p className="text-xl font-bold text-blue-700">₹{charge}</p>
+              <div className="lg:hidden bg-brand-50 border border-brand-200 rounded-xl px-4 py-3">
+                <p className="text-xs text-brand-600 font-medium mb-0.5">Total Charge</p>
+                <p className="text-xl font-bold text-brand-700">₹{charge}</p>
               </div>
             )}
 
@@ -243,7 +243,7 @@ export default function NewOrder() {
             <button
               type="submit"
               disabled={loading || !selectedService || insufficientBalance}
-              className="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 sm:py-3.5 rounded-xl transition-colors text-sm flex items-center justify-center gap-2 min-h-[48px] touch-manipulation"
+              className="w-full bg-brand-600 hover:bg-brand-700 active:bg-brand-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 sm:py-3.5 rounded-xl transition-colors text-sm flex items-center justify-center gap-2 min-h-[48px] touch-manipulation"
             >
               {loading ? (
                 <>
@@ -305,7 +305,7 @@ export default function NewOrder() {
                     </span>
                   )}
                   {selectedService.cancel && (
-                    <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 text-xs font-medium px-2 py-1 rounded-lg border border-blue-200">
+                    <span className="inline-flex items-center gap-1 bg-brand-50 text-brand-700 text-xs font-medium px-2 py-1 rounded-lg border border-brand-200">
                       ✓ Cancel
                     </span>
                   )}
@@ -313,9 +313,9 @@ export default function NewOrder() {
               </div>
 
               {charge && (
-                <div className="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
-                  <p className="text-xs text-blue-600 font-medium mb-0.5">Total Charge</p>
-                  <p className="text-xl font-bold text-blue-700">₹{charge}</p>
+                <div className="bg-brand-50 border border-brand-200 rounded-xl px-4 py-3">
+                  <p className="text-xs text-brand-600 font-medium mb-0.5">Total Charge</p>
+                  <p className="text-xl font-bold text-brand-700">₹{charge}</p>
                 </div>
               )}
             </div>

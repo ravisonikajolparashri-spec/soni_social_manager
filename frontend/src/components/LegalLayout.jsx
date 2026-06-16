@@ -20,10 +20,10 @@ function PublicShell({ children }) {
       <nav className="sticky top-0 z-20 bg-white/90 backdrop-blur-md border-b border-slate-200">
         <div className="max-w-3xl mx-auto flex items-center justify-between gap-2 px-4 sm:px-6 py-3.5 sm:py-4">
           <Link to="/" className="flex items-center gap-2 min-w-0">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-xs sm:text-sm shrink-0">V</div>
+            <img src="/logo-icon.png" alt="Viral SMM Panel" className="w-7 h-7 sm:w-8 sm:h-8 object-contain shrink-0" />
             <span className="text-sm sm:text-base font-bold text-slate-800 truncate">Viral SMM Panel</span>
           </Link>
-          <Link to="/" className="text-xs sm:text-sm font-medium text-blue-600 hover:text-blue-700 shrink-0 whitespace-nowrap">
+          <Link to="/" className="text-xs sm:text-sm font-medium text-brand-600 hover:text-brand-700 shrink-0 whitespace-nowrap">
             ← Back to home
           </Link>
         </div>
@@ -90,7 +90,7 @@ export function LegalSection({ title, children }) {
       {title && <h2 className="text-sm sm:text-base font-bold text-slate-900 mb-2">{title}</h2>}
       <div className="text-sm sm:text-[15px] text-slate-600 leading-relaxed space-y-2.5
         [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5
-        [&_a]:text-blue-600 [&_a]:font-medium [&_a:hover]:underline">
+        [&_a]:text-brand-600 [&_a]:font-medium [&_a:hover]:underline">
         {children}
       </div>
     </section>
@@ -102,7 +102,7 @@ export function LegalCallout({ tone = 'amber', children }) {
     amber: 'bg-amber-50 border-amber-200 text-amber-800',
     green: 'bg-emerald-50 border-emerald-200 text-emerald-800',
     red:   'bg-red-50 border-red-200 text-red-800',
-    blue:  'bg-blue-50 border-blue-200 text-blue-800',
+    blue:  'bg-brand-50 border-brand-200 text-brand-800',
   }
   return (
     <div className={`border rounded-xl px-4 py-3 text-sm font-medium ${tones[tone]}`}>

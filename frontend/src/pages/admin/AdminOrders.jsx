@@ -4,9 +4,9 @@ import CustomSelect from '../../components/CustomSelect'
 
 const STATUS_STYLES = {
   Completed:    'bg-emerald-100 text-emerald-700 border border-emerald-200',
-  'In progress':'bg-blue-100 text-blue-700 border border-blue-200',
+  'In progress':'bg-brand-100 text-brand-700 border border-brand-200',
   Pending:      'bg-amber-100 text-amber-700 border border-amber-200',
-  Processing:   'bg-blue-100 text-blue-700 border border-blue-200',
+  Processing:   'bg-brand-100 text-brand-700 border border-brand-200',
   Partial:      'bg-orange-100 text-orange-700 border border-orange-200',
   Canceled:     'bg-red-100 text-red-700 border border-red-200',
 }
@@ -61,7 +61,7 @@ export default function AdminOrders() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search by order ID, user ID or link…"
-            className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
+            className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 min-h-[44px]"
           />
         </div>
         <CustomSelect
@@ -96,7 +96,7 @@ export default function AdminOrders() {
                         {o.status}
                       </span>
                     </div>
-                    <a href={o.link} target="_blank" rel="noreferrer" className="text-xs text-blue-600 hover:underline truncate block max-w-[240px]">{o.link}</a>
+                    <a href={o.link} target="_blank" rel="noreferrer" className="text-xs text-brand-600 hover:underline truncate block max-w-[240px]">{o.link}</a>
                   </div>
                   <div className="text-right shrink-0">
                     <p className="text-sm font-bold text-slate-800">₹{o.charge}</p>
@@ -129,7 +129,7 @@ export default function AdminOrders() {
                       <td className="px-4 py-3.5 text-slate-500 text-xs">#{o.user_id}</td>
                       <td className="px-4 py-3.5 font-mono text-xs text-slate-400">{o.external_order_id || '—'}</td>
                       <td className="px-4 py-3.5 max-w-[160px] lg:max-w-[220px]">
-                        <a href={o.link} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline truncate block text-xs">{o.link}</a>
+                        <a href={o.link} target="_blank" rel="noreferrer" className="text-brand-600 hover:underline truncate block text-xs">{o.link}</a>
                       </td>
                       <td className="px-4 py-3.5 font-medium text-slate-700 whitespace-nowrap">{o.quantity.toLocaleString()}</td>
                       <td className="px-4 py-3.5 font-semibold text-slate-800 whitespace-nowrap">₹{o.charge}</td>

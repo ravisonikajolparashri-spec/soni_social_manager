@@ -44,7 +44,7 @@ export default function Layout({ children }) {
             </svg>
           </button>
           <Link to="/dashboard" className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-xs">V</div>
+            <img src="/logo-icon.png" alt="Viral SMM Panel" className="w-7 h-7 object-contain" />
             <span className="font-bold text-slate-800 text-sm">Viral SMM Panel</span>
           </Link>
         </header>

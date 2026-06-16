@@ -57,7 +57,7 @@ export default function AdminServices() {
         <button
           onClick={handleSync}
           disabled={syncing}
-          className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 disabled:opacity-60 text-white px-4 sm:px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-sm touch-manipulation min-h-[44px]"
+          className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 active:bg-brand-800 disabled:opacity-60 text-white px-4 sm:px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-sm touch-manipulation min-h-[44px]"
         >
           <svg className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
           {syncing ? 'Syncing…' : 'Sync Services'}
@@ -82,7 +82,7 @@ export default function AdminServices() {
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search by name, category or ID…"
-          className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
+          className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 min-h-[44px]"
         />
       </div>
 
@@ -118,7 +118,7 @@ export default function AdminServices() {
                 </div>
                 <p className="text-xs text-slate-500">Range: {s.min_order.toLocaleString()} – {s.max_order.toLocaleString()}</p>
                 <div className="flex gap-2 pt-1">
-                  <button onClick={() => { setEditModal(s); setEditRate(String(s.rate)) }} className="flex-1 text-xs bg-blue-100 text-blue-700 px-3 py-2 rounded-lg hover:bg-blue-200 font-medium transition-colors min-h-[36px] touch-manipulation">Edit Rate</button>
+                  <button onClick={() => { setEditModal(s); setEditRate(String(s.rate)) }} className="flex-1 text-xs bg-brand-100 text-brand-700 px-3 py-2 rounded-lg hover:bg-brand-200 font-medium transition-colors min-h-[36px] touch-manipulation">Edit Rate</button>
                   <button onClick={() => toggleActive(s)} className={`flex-1 text-xs px-3 py-2 rounded-lg font-medium transition-colors min-h-[36px] touch-manipulation ${
                     s.is_active ? 'bg-red-100 text-red-600 hover:bg-red-200' : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
                   }`}>{s.is_active ? 'Hide' : 'Show'}</button>
@@ -154,7 +154,7 @@ export default function AdminServices() {
                       </td>
                       <td className="px-4 py-3.5">
                         <div className="flex gap-1.5">
-                          <button onClick={() => { setEditModal(s); setEditRate(String(s.rate)) }} className="text-xs bg-blue-100 text-blue-700 px-2.5 py-1 rounded-lg hover:bg-blue-200 font-medium transition-colors">Edit Rate</button>
+                          <button onClick={() => { setEditModal(s); setEditRate(String(s.rate)) }} className="text-xs bg-brand-100 text-brand-700 px-2.5 py-1 rounded-lg hover:bg-brand-200 font-medium transition-colors">Edit Rate</button>
                           <button onClick={() => toggleActive(s)} className={`text-xs px-2.5 py-1 rounded-lg font-medium transition-colors ${
                             s.is_active ? 'bg-red-100 text-red-600 hover:bg-red-200' : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
                           }`}>{s.is_active ? 'Hide' : 'Show'}</button>
@@ -191,12 +191,12 @@ export default function AdminServices() {
                   required
                   value={editRate}
                   onChange={e => setEditRate(e.target.value)}
-                  className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm min-h-[44px]"
+                  className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm min-h-[44px]"
                   placeholder="Selling rate per 1000"
                 />
               </div>
               <div className="flex gap-3">
-                <button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-sm font-semibold transition-colors min-h-[44px] touch-manipulation">Save</button>
+                <button type="submit" className="flex-1 bg-brand-600 hover:bg-brand-700 text-white py-3 rounded-xl text-sm font-semibold transition-colors min-h-[44px] touch-manipulation">Save</button>
                 <button type="button" onClick={() => setEditModal(null)} className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-xl text-sm font-medium transition-colors min-h-[44px] touch-manipulation">Cancel</button>
               </div>
             </form>

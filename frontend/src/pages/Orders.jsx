@@ -4,9 +4,9 @@ import CustomSelect from '../components/CustomSelect'
 
 const STATUS_STYLES = {
   Completed:    'bg-emerald-100 text-emerald-700 border border-emerald-200',
-  'In progress':'bg-blue-100 text-blue-700 border border-blue-200',
+  'In progress':'bg-brand-100 text-brand-700 border border-brand-200',
   Pending:      'bg-amber-100 text-amber-700 border border-amber-200',
-  Processing:   'bg-blue-100 text-blue-700 border border-blue-200',
+  Processing:   'bg-brand-100 text-brand-700 border border-brand-200',
   Partial:      'bg-orange-100 text-orange-700 border border-orange-200',
   Canceled:     'bg-red-100 text-red-700 border border-red-200',
 }
@@ -101,7 +101,7 @@ export default function Orders() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search by ID or link…"
-            className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
+            className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 min-h-[44px]"
           />
         </div>
         <CustomSelect
@@ -144,7 +144,7 @@ export default function Orders() {
                         {o.status}
                       </span>
                     </div>
-                    <a href={o.link} target="_blank" rel="noreferrer" className="block text-xs text-blue-600 hover:underline truncate mt-1.5 max-w-[240px]">
+                    <a href={o.link} target="_blank" rel="noreferrer" className="block text-xs text-brand-600 hover:underline truncate mt-1.5 max-w-[240px]">
                       {o.link}
                     </a>
                   </div>
@@ -167,7 +167,7 @@ export default function Orders() {
                       <button
                         onClick={() => handleRefill(o.id)}
                         disabled={actionLoading === o.id + '-refill'}
-                        className="flex-1 text-xs bg-blue-100 text-blue-700 px-3 py-2 rounded-lg hover:bg-blue-200 disabled:opacity-50 font-medium transition-colors min-h-[36px] touch-manipulation"
+                        className="flex-1 text-xs bg-brand-100 text-brand-700 px-3 py-2 rounded-lg hover:bg-brand-200 disabled:opacity-50 font-medium transition-colors min-h-[36px] touch-manipulation"
                       >
                         {actionLoading === o.id + '-refill' ? '…' : 'Refill'}
                       </button>
@@ -205,7 +205,7 @@ export default function Orders() {
                         <span className="font-mono text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md">#{o.id}</span>
                       </td>
                       <td className="px-4 py-3.5 max-w-[180px] lg:max-w-[240px]">
-                        <a href={o.link} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline truncate block text-xs">{o.link}</a>
+                        <a href={o.link} target="_blank" rel="noreferrer" className="text-brand-600 hover:underline truncate block text-xs">{o.link}</a>
                       </td>
                       <td className="px-4 py-3.5 font-medium text-slate-700 whitespace-nowrap">{o.quantity.toLocaleString()}</td>
                       <td className="px-4 py-3.5 font-semibold text-slate-800 whitespace-nowrap">₹{o.charge}</td>
@@ -221,7 +221,7 @@ export default function Orders() {
                       <td className="px-4 py-3.5">
                         <div className="flex gap-1.5">
                           {o.status === 'Partial' && (
-                            <button onClick={() => handleRefill(o.id)} disabled={actionLoading === o.id + '-refill'} className="text-xs bg-blue-100 text-blue-700 px-2.5 py-1 rounded-lg hover:bg-blue-200 disabled:opacity-50 font-medium transition-colors">Refill</button>
+                            <button onClick={() => handleRefill(o.id)} disabled={actionLoading === o.id + '-refill'} className="text-xs bg-brand-100 text-brand-700 px-2.5 py-1 rounded-lg hover:bg-brand-200 disabled:opacity-50 font-medium transition-colors">Refill</button>
                           )}
                           {['Pending', 'In progress'].includes(o.status) && (
                             <button onClick={() => handleCancel(o.id)} disabled={actionLoading === o.id + '-cancel'} className="text-xs bg-red-100 text-red-700 px-2.5 py-1 rounded-lg hover:bg-red-200 disabled:opacity-50 font-medium transition-colors">Cancel</button>
