@@ -62,12 +62,13 @@ export const ordersAPI = {
 // ── Transactions ──────────────────────────────────────────────────────────
 export const transactionsAPI = {
   list: () => api.get('/transactions'),
-  // Razorpay: step 1 — create order on backend, get order_id + key_id back
-  createRazorpayOrder: (amount) =>
-    api.post('/transactions/create-razorpay-order', { amount }),
-  // Razorpay: step 2 — verify signature and credit balance
-  verifyPayment: (data) =>
-    api.post('/transactions/verify-payment', data),
+  // QR scan-and-pay: fetch the QR image admin has configured
+  getPaymentQR: () => api.get('/transactions/payment-qr'),
+  // Submit a manual payment for admin review (amount, transaction ID, optional screenshot)
+  submitPaymentRequest: (data) => api.post('/transactions/payment-requests', data),
+  // List the current user's own submitted payment requests (screenshot blobs excluded — lazy-load below)
+  myPaymentRequests: () => api.get('/transactions/payment-requests'),
+  getMyScreenshot: (id) => api.get(`/transactions/payment-requests/${id}/screenshot`),
   // Admin-only direct credit
   addFunds: (amount) => api.post('/transactions/add-funds', { amount }),
 }
@@ -82,6 +83,15 @@ export const adminAPI = {
   syncServices: () => api.post('/admin/services/sync'),
   updateService: (id, data) => api.patch(`/admin/services/${id}`, data),
   orders: (status) => api.get('/admin/orders', { params: status ? { status } : {} }),
+  // Payment QR settings
+  getPaymentQR: () => api.get('/admin/settings/payment-qr'),
+  setPaymentQR: (image) => api.put('/admin/settings/payment-qr', { image }),
+  // Manual payment requests review (screenshot blobs excluded from the list — lazy-load below)
+  paymentRequests: (status, limit = 50, offset = 0) =>
+    api.get('/admin/payment-requests', { params: { ...(status ? { status } : {}), limit, offset } }),
+  getPaymentRequestScreenshot: (id) => api.get(`/admin/payment-requests/${id}/screenshot`),
+  approvePaymentRequest: (id, admin_note) => api.post(`/admin/payment-requests/${id}/approve`, { admin_note }),
+  rejectPaymentRequest: (id, admin_note) => api.post(`/admin/payment-requests/${id}/reject`, { admin_note }),
 }
 
 export default api

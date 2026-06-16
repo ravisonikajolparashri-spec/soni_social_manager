@@ -7,7 +7,7 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from app.config import settings
 from app.database import init_db, AsyncSessionLocal
-from app.models import User, Service, Order, Transaction  # noqa: register models
+from app.models import User, Service, Order, Transaction, PaymentRequest, Setting  # noqa: register models
 from app.routers import auth, services, orders, transactions, admin
 from app.utils.tasks import sync_order_statuses
 from app.utils.auth import hash_password

@@ -32,6 +32,7 @@ const adminLinks = [
   { to: '/admin/users',    label: 'Users',    icon: 'users'              },
   { to: '/admin/services', label: 'Services', icon: 'services'           },
   { to: '/admin/orders',   label: 'Orders',   icon: 'orders'             },
+  { to: '/admin/payments', label: 'Payments', icon: 'wallet'             },
 ]
 
 /* ── NavItem ─────────────────────────────────────────────────────────────── */

@@ -18,6 +18,7 @@ import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminUsers from './pages/admin/AdminUsers'
 import AdminServices from './pages/admin/AdminServices'
 import AdminOrders from './pages/admin/AdminOrders'
+import AdminPayments from './pages/admin/AdminPayments'
 
 export default function App() {
   return (
@@ -38,6 +39,7 @@ export default function App() {
       <Route path="/admin/users" element={<AdminRoute><Layout><AdminUsers /></Layout></AdminRoute>} />
       <Route path="/admin/services" element={<AdminRoute><Layout><AdminServices /></Layout></AdminRoute>} />
       <Route path="/admin/orders" element={<AdminRoute><Layout><AdminOrders /></Layout></AdminRoute>} />
+      <Route path="/admin/payments" element={<AdminRoute><Layout><AdminPayments /></Layout></AdminRoute>} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

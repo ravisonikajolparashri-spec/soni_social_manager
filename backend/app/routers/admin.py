@@ -2,19 +2,28 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, update
 from typing import Optional
+from datetime import datetime, timezone
 from app.database import get_db
 from app.models.user import User
 from app.models.service import Service
 from app.models.order import Order
 from app.models.transaction import Transaction
+from app.models.payment_request import PaymentRequest
+from app.models.setting import Setting
 from app.schemas.user import UserOut, UserUpdate
 from app.schemas.service import ServiceOut, ServiceUpdate
 from app.schemas.order import OrderOut
 from app.schemas.transaction import TransactionOut, AddFundsRequest
+from app.schemas.payment_request import (
+    PaymentRequestAdminOut, PaymentRequestAdminListOut, PaymentRequestReview, PaymentQRUpdate,
+)
 from app.utils.auth import get_admin_user
 from app.services.smm_api import smm_client, SMMApiError
+from app.routers.transactions import invalidate_payment_qr_cache
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
+
+PAYMENT_QR_KEY = "payment_qr_image"
 
 
 # ── Dashboard stats ──────────────────────────────────────────────────────────
@@ -183,3 +192,160 @@ async def admin_list_orders(
         query = query.where(Order.status == status)
     result = await db.execute(query)
     return result.scalars().all()
+
+
+# ── Payment QR settings ──────────────────────────────────────────────────────
+
+@router.get("/settings/payment-qr")
+async def admin_get_payment_qr(db: AsyncSession = Depends(get_db), _: User = Depends(get_admin_user)):
+    result = await db.execute(select(Setting).where(Setting.key == PAYMENT_QR_KEY))
+    setting = result.scalar_one_or_none()
+    return {"image": setting.value if setting else None}
+
+
+@router.put("/settings/payment-qr")
+async def admin_set_payment_qr(
+    data: PaymentQRUpdate,
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(get_admin_user)
+):
+    result = await db.execute(select(Setting).where(Setting.key == PAYMENT_QR_KEY))
+    setting = result.scalar_one_or_none()
+    if setting:
+        setting.value = data.image
+    else:
+        setting = Setting(key=PAYMENT_QR_KEY, value=data.image)
+        db.add(setting)
+    await db.commit()
+    invalidate_payment_qr_cache()
+    return {"image": data.image}
+
+
+# ── Manual payment requests (scan QR & pay) ──────────────────────────────────
+
+@router.get("/payment-requests", response_model=list[PaymentRequestAdminListOut])
+async def admin_list_payment_requests(
+    status: Optional[str] = None,
+    limit: int = 50,
+    offset: int = 0,
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(get_admin_user)
+):
+    # Screenshot blobs are excluded — use /payment-requests/{id}/screenshot to
+    # lazy-load one on demand. limit/offset keep this bounded at scale.
+    limit = max(1, min(limit, 200))
+    offset = max(0, offset)
+
+    query = (
+        select(PaymentRequest, User.username, User.email)
+        .join(User, User.id == PaymentRequest.user_id)
+        .order_by(PaymentRequest.created_at.desc())
+        .limit(limit)
+        .offset(offset)
+    )
+    if status:
+        query = query.where(PaymentRequest.status == status)
+    result = await db.execute(query)
+    rows = result.all()
+
+    out = []
+    for req, username, email in rows:
+        out.append(PaymentRequestAdminListOut(
+            id=req.id, user_id=req.user_id, amount=req.amount, transaction_id=req.transaction_id,
+            has_screenshot=bool(req.screenshot), status=req.status, admin_note=req.admin_note,
+            reviewed_by=req.reviewed_by, created_at=req.created_at, reviewed_at=req.reviewed_at,
+            username=username, email=email,
+        ))
+    return out
+
+
+@router.get("/payment-requests/{request_id}/screenshot")
+async def admin_get_payment_request_screenshot(
+    request_id: int,
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(get_admin_user)
+):
+    """Lazy-load a single screenshot for the admin review modal."""
+    result = await db.execute(select(PaymentRequest).where(PaymentRequest.id == request_id))
+    req = result.scalar_one_or_none()
+    if not req or not req.screenshot:
+        raise HTTPException(status_code=404, detail="No screenshot found")
+    return {"screenshot": req.screenshot}
+
+
+@router.post("/payment-requests/{request_id}/approve", response_model=TransactionOut)
+async def admin_approve_payment_request(
+    request_id: int,
+    data: PaymentRequestReview,
+    db: AsyncSession = Depends(get_db),
+    admin: User = Depends(get_admin_user)
+):
+    # Row-lock both the request and the user for the duration of this transaction
+    # so two concurrent approve calls (e.g. an admin double-click, or two admins
+    # at once) can never both pass the pending-status check and double-credit
+    # the wallet. The second caller blocks here until the first commits, then
+    # sees status == "approved" and gets a clean 400 instead of crediting twice.
+    result = await db.execute(
+        select(PaymentRequest).where(PaymentRequest.id == request_id).with_for_update()
+    )
+    req = result.scalar_one_or_none()
+    if not req:
+        raise HTTPException(status_code=404, detail="Payment request not found")
+    if req.status != "pending":
+        raise HTTPException(status_code=400, detail=f"Request already {req.status}")
+
+    user_result = await db.execute(
+        select(User).where(User.id == req.user_id).with_for_update()
+    )
+    user = user_result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user.balance = round(user.balance + req.amount, 4)
+    txn = Transaction(
+        user_id=user.id,
+        type="deposit",
+        amount=req.amount,
+        balance_after=user.balance,
+        description=f"QR payment approved — txn {req.transaction_id}",
+        reference_id=req.id,
+    )
+    db.add(txn)
+
+    req.status = "approved"
+    req.admin_note = data.admin_note
+    req.reviewed_by = admin.id
+    req.reviewed_at = datetime.now(timezone.utc)
+
+    await db.commit()
+    await db.refresh(txn)
+    return txn
+
+
+@router.post("/payment-requests/{request_id}/reject", response_model=PaymentRequestAdminOut)
+async def admin_reject_payment_request(
+    request_id: int,
+    data: PaymentRequestReview,
+    db: AsyncSession = Depends(get_db),
+    admin: User = Depends(get_admin_user)
+):
+    result = await db.execute(select(PaymentRequest).where(PaymentRequest.id == request_id))
+    req = result.scalar_one_or_none()
+    if not req:
+        raise HTTPException(status_code=404, detail="Payment request not found")
+    if req.status != "pending":
+        raise HTTPException(status_code=400, detail=f"Request already {req.status}")
+
+    req.status = "rejected"
+    req.admin_note = data.admin_note
+    req.reviewed_by = admin.id
+    req.reviewed_at = datetime.now(timezone.utc)
+    await db.commit()
+    await db.refresh(req)
+
+    user_result = await db.execute(select(User).where(User.id == req.user_id))
+    user = user_result.scalar_one_or_none()
+    out = PaymentRequestAdminOut.model_validate(req)
+    out.username = user.username if user else None
+    out.email = user.email if user else None
+    return out

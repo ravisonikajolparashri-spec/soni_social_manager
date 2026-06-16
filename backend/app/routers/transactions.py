@@ -1,94 +1,66 @@
-import hmac
-import hashlib
-import uuid
-import httpx
+import base64
 import logging
 import time
-from fastapi import APIRouter, Depends, HTTPException
+from pathlib import Path
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.database import get_db
 from app.models.user import User
 from app.models.transaction import Transaction
+from app.models.payment_request import PaymentRequest
+from app.models.setting import Setting
 from app.schemas.transaction import TransactionOut, AddFundsRequest
+from app.schemas.payment_request import PaymentRequestCreate, PaymentRequestOut, PaymentRequestListOut
 from app.utils.auth import get_current_user
-from app.config import settings
-from pydantic import BaseModel, field_validator
+from app.utils.rate_limit import limiter
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/transactions", tags=["transactions"])
 
-# ── Server-side pending payment store ─────────────────────────────────────────
-# Maps razorpay_order_id → (user_id, amount_inr, expires_at)
-# This prevents the client from manipulating the amount credited to their wallet.
-# Entries expire after 1 hour automatically.
-_pending_payments: dict[str, tuple[int, float, float]] = {}
-_PAYMENT_TTL = 3600  # 1 hour
+PAYMENT_QR_KEY = "payment_qr_image"
+
+# ── Bundled fallback QR (ships with the code, safe under Railway's ephemeral
+# filesystem since it's a static asset re-deployed every release, not a
+# runtime upload). Used only until an admin uploads a custom QR via the
+# admin panel, at which point the DB-stored Setting always takes priority. ──
+_STATIC_QR_PATH = Path(__file__).resolve().parent.parent / "static" / "default_payment_qr.png"
+_default_qr_data_url_cache: str | None = None
 
 
-def _store_pending(order_id: str, user_id: int, amount: float) -> None:
-    # Prune expired entries to avoid unbounded growth
-    now = time.time()
-    expired = [k for k, v in _pending_payments.items() if v[2] < now]
-    for k in expired:
-        del _pending_payments[k]
-    _pending_payments[order_id] = (user_id, amount, now + _PAYMENT_TTL)
+def _get_default_qr_data_url() -> str | None:
+    global _default_qr_data_url_cache
+    if _default_qr_data_url_cache is None and _STATIC_QR_PATH.exists():
+        encoded = base64.b64encode(_STATIC_QR_PATH.read_bytes()).decode()
+        _default_qr_data_url_cache = f"data:image/png;base64,{encoded}"
+    return _default_qr_data_url_cache
 
 
-def _consume_pending(order_id: str, user_id: int) -> float:
-    """Return the server-stored amount and remove the entry. Raises if invalid."""
-    entry = _pending_payments.pop(order_id, None)
-    if entry is None:
-        raise HTTPException(status_code=400, detail="Payment session expired or not found. Please retry.")
-    stored_user_id, amount, expires_at = entry
-    if time.time() > expires_at:
-        raise HTTPException(status_code=400, detail="Payment session expired. Please retry.")
-    if stored_user_id != user_id:
-        logger.warning(f"User ID mismatch on payment verify: stored={stored_user_id}, got={user_id}")
-        raise HTTPException(status_code=403, detail="Payment session mismatch.")
-    return amount
+# ── In-memory cache for the admin-configured QR Setting ─────────────────────
+# Avoids a DB round-trip on every Add Funds page load at scale. Invalidated
+# immediately whenever the admin updates the QR (see admin.py), and also
+# carries a short TTL as a safety net against any other writer.
+_qr_cache: dict = {"value": None, "loaded_at": 0.0}
+_QR_CACHE_TTL_SECONDS = 300
 
 
-# ── Schemas ───────────────────────────────────────────────────────────────────
-
-class RazorpayOrderRequest(BaseModel):
-    amount: float  # INR
-
-    @field_validator("amount")
-    @classmethod
-    def validate_amount(cls, v):
-        if v < 1:
-            raise ValueError("Minimum deposit is ₹1")
-        if v > 500000:
-            raise ValueError("Maximum deposit is ₹5,00,000")
-        return round(v, 2)
+def invalidate_payment_qr_cache():
+    _qr_cache["value"] = None
+    _qr_cache["loaded_at"] = 0.0
 
 
-class RazorpayOrderResponse(BaseModel):
-    order_id: str
-    amount: int        # paise
-    currency: str
-    key_id: str
+async def _get_payment_qr_cached(db: AsyncSession) -> str | None:
+    now = time.monotonic()
+    if _qr_cache["value"] is not None and (now - _qr_cache["loaded_at"]) < _QR_CACHE_TTL_SECONDS:
+        return _qr_cache["value"]
 
+    result = await db.execute(select(Setting).where(Setting.key == PAYMENT_QR_KEY))
+    setting = result.scalar_one_or_none()
+    image = setting.value if setting and setting.value else _get_default_qr_data_url()
 
-class PaymentVerifyRequest(BaseModel):
-    razorpay_order_id: str
-    razorpay_payment_id: str
-    razorpay_signature: str
-    # NOTE: amount is intentionally NOT accepted from client anymore.
-    # The amount is looked up from server-side store keyed by razorpay_order_id.
-
-
-# ── Helpers ───────────────────────────────────────────────────────────────────
-
-def _verify_razorpay_signature(order_id: str, payment_id: str, signature: str) -> bool:
-    message = f"{order_id}|{payment_id}"
-    expected = hmac.new(
-        settings.RAZORPAY_KEY_SECRET.encode("utf-8"),
-        message.encode("utf-8"),
-        hashlib.sha256,
-    ).hexdigest()
-    return hmac.compare_digest(expected, signature)
+    _qr_cache["value"] = image
+    _qr_cache["loaded_at"] = now
+    return image
 
 
 # ── Endpoints ─────────────────────────────────────────────────────────────────
@@ -107,87 +79,89 @@ async def list_transactions(
     return result.scalars().all()
 
 
-@router.post("/create-razorpay-order", response_model=RazorpayOrderResponse)
-async def create_razorpay_order(
-    data: RazorpayOrderRequest,
-    current_user: User = Depends(get_current_user),
-):
-    if not settings.RAZORPAY_KEY_ID or not settings.RAZORPAY_KEY_SECRET:
-        raise HTTPException(status_code=503, detail="Payment gateway not configured")
+# ── Manual "scan QR & pay" deposits ─────────────────────────────────────────
 
-    amount_paise = int(round(data.amount * 100))
-    receipt = f"rcpt_{uuid.uuid4().hex[:16]}"
-
-    try:
-        async with httpx.AsyncClient(timeout=15.0) as client:
-            resp = await client.post(
-                "https://api.razorpay.com/v1/orders",
-                auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET),
-                json={"amount": amount_paise, "currency": "INR", "receipt": receipt},
-            )
-            resp.raise_for_status()
-            order = resp.json()
-    except httpx.HTTPStatusError as e:
-        logger.error(f"Razorpay order creation failed: {e.response.text}")
-        raise HTTPException(status_code=502, detail="Payment gateway error — try again")
-    except Exception as e:
-        logger.error(f"Razorpay request error: {e}")
-        raise HTTPException(status_code=502, detail="Could not reach payment gateway")
-
-    # Store the authoritative amount server-side — client cannot alter this
-    _store_pending(order["id"], current_user.id, data.amount)
-    logger.info(f"Razorpay order created: {order['id']} for user {current_user.id}, ₹{data.amount}")
-
-    return RazorpayOrderResponse(
-        order_id=order["id"],
-        amount=amount_paise,
-        currency="INR",
-        key_id=settings.RAZORPAY_KEY_ID,
-    )
-
-
-@router.post("/verify-payment", response_model=TransactionOut)
-async def verify_payment(
-    data: PaymentVerifyRequest,
+@router.get("/payment-qr")
+async def get_payment_qr(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    # 1. Verify Razorpay HMAC signature
-    if not _verify_razorpay_signature(
-        data.razorpay_order_id,
-        data.razorpay_payment_id,
-        data.razorpay_signature,
-    ):
-        logger.warning(f"Invalid Razorpay signature for order {data.razorpay_order_id} by user {current_user.id}")
-        raise HTTPException(status_code=400, detail="Payment verification failed — invalid signature")
+    """Returns the QR code image shown on the Add Funds page — the admin-configured
+    one if set, otherwise the bundled default. Served from an in-memory cache so
+    this hot endpoint doesn't hit Postgres on every page load at scale."""
+    image = await _get_payment_qr_cached(db)
+    return {"image": image}
 
-    # 2. Retrieve server-stored amount (prevents client manipulation)
-    amount = _consume_pending(data.razorpay_order_id, current_user.id)
 
-    # 3. Idempotency — reject duplicate payment IDs
-    existing = await db.execute(
-        select(Transaction).where(
-            Transaction.description.contains(data.razorpay_payment_id)
+@router.post("/payment-requests", response_model=PaymentRequestOut)
+@limiter.limit("10/hour")
+async def create_payment_request(
+    request: Request,
+    data: PaymentRequestCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    # Fraud guard: the same UPI transaction/UTR ID must not be submitted twice,
+    # whether by the same user retrying or a different user reusing a captured ID.
+    dup = await db.execute(
+        select(PaymentRequest.id).where(PaymentRequest.transaction_id == data.transaction_id)
+    )
+    if dup.scalar_one_or_none():
+        raise HTTPException(status_code=400, detail="This transaction ID has already been submitted")
+
+    req = PaymentRequest(
+        user_id=current_user.id,
+        amount=data.amount,
+        transaction_id=data.transaction_id,
+        screenshot=data.screenshot,
+        status="pending",
+    )
+    db.add(req)
+    await db.commit()
+    await db.refresh(req)
+    logger.info(f"Payment request #{req.id} submitted by user {current_user.id} for ₹{data.amount}")
+    return req
+
+
+@router.get("/payment-requests", response_model=list[PaymentRequestListOut])
+async def list_my_payment_requests(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    # Screenshot blobs are excluded here on purpose — see PaymentRequestListOut.
+    result = await db.execute(
+        select(PaymentRequest)
+        .where(PaymentRequest.user_id == current_user.id)
+        .order_by(PaymentRequest.created_at.desc())
+        .limit(50)
+    )
+    rows = result.scalars().all()
+    return [
+        PaymentRequestListOut(
+            id=r.id, user_id=r.user_id, amount=r.amount, transaction_id=r.transaction_id,
+            has_screenshot=bool(r.screenshot), status=r.status, admin_note=r.admin_note,
+            reviewed_by=r.reviewed_by, created_at=r.created_at, reviewed_at=r.reviewed_at,
+        )
+        for r in rows
+    ]
+
+
+@router.get("/payment-requests/{request_id}/screenshot")
+async def get_my_payment_request_screenshot(
+    request_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Lazy-load a single screenshot — only fetched when the user actually opens it."""
+    result = await db.execute(
+        select(PaymentRequest).where(
+            PaymentRequest.id == request_id, PaymentRequest.user_id == current_user.id
         )
     )
-    if existing.scalar_one_or_none():
-        raise HTTPException(status_code=409, detail="Payment already processed")
-
-    # 4. Credit balance
-    current_user.balance = round(current_user.balance + amount, 4)
-    txn = Transaction(
-        user_id=current_user.id,
-        type="deposit",
-        amount=amount,
-        balance_after=current_user.balance,
-        description=f"Razorpay {data.razorpay_payment_id}",
-    )
-    db.add(txn)
-    await db.commit()
-    await db.refresh(txn)
-
-    logger.info(f"Payment verified: {data.razorpay_payment_id} — ₹{amount} credited to user {current_user.id}")
-    return txn
+    req = result.scalar_one_or_none()
+    if not req or not req.screenshot:
+        raise HTTPException(status_code=404, detail="No screenshot found")
+    return {"screenshot": req.screenshot}
 
 
 # ── Admin-only direct fund addition ──────────────────────────────────────────
@@ -199,7 +173,7 @@ async def add_funds(
     current_user: User = Depends(get_current_user),
 ):
     if not current_user.is_admin:
-        raise HTTPException(status_code=403, detail="Use the Add Funds page to deposit via Razorpay.")
+        raise HTTPException(status_code=403, detail="Use the Add Funds page to submit a deposit for review.")
     if data.amount <= 0:
         raise HTTPException(status_code=400, detail="Amount must be positive")
     if data.amount > 100000:
