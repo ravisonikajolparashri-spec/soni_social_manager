@@ -58,7 +58,7 @@ export default function Refund() {
         </LegalSection>
 
         <LegalSection title="5. How to Request a Refund">
-          <p><Link to="/contact">Contact us</Link> or email <a href="mailto:reyanshofficial01@gmail.com">reyanshofficial01@gmail.com</a> with:</p>
+          <p><Link to="/contact">Contact us</Link> on Instagram or WhatsApp with:</p>
           <ul>
             <li>Your registered email address</li>
             <li>Order ID</li>
@@ -68,7 +68,7 @@ export default function Refund() {
         </LegalSection>
 
         <LegalSection title="6. Disputes">
-          <p>If you believe a refund was incorrectly denied, you may escalate by replying to your refund email thread. All decisions are final after 7 days of the order date.</p>
+          <p>If you believe a refund was incorrectly denied, you may escalate by messaging us again on Instagram or WhatsApp. All decisions are final after 7 days of the order date.</p>
         </LegalSection>
       </LegalCard>
     </LegalLayout>

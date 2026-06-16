@@ -7,7 +7,7 @@ export default function Privacy() {
       <LegalHeader title="Privacy Policy" meta="Last updated: June 2026 · Effective immediately" />
       <LegalCard>
         <LegalSection title="1. Who We Are">
-          <p>Viral SMM Panel ("we", "us", "our") operates the website <a href="https://viral-smm.vercel.app">https://viral-smm.vercel.app</a> — a social media marketing services platform. For any privacy enquiries <Link to="/contact">contact us</Link> or email <a href="mailto:reyanshofficial01@gmail.com">reyanshofficial01@gmail.com</a>.</p>
+          <p>Viral SMM Panel ("we", "us", "our") operates the website <a href="https://viral-smm.vercel.app">https://viral-smm.vercel.app</a> — a social media marketing services platform. For any privacy enquiries <Link to="/contact">contact us</Link> via Instagram or WhatsApp.</p>
         </LegalSection>
 
         <LegalSection title="2. Information We Collect">
@@ -39,7 +39,7 @@ export default function Privacy() {
         </LegalSection>
 
         <LegalSection title="6. Data Retention">
-          <p>Your account data is retained while your account is active. Order and transaction records are kept for 3 years for accounting purposes. You may request full deletion at any time by emailing us.</p>
+          <p>Your account data is retained while your account is active. Order and transaction records are kept for 3 years for accounting purposes. You may request full deletion at any time by <Link to="/contact">contacting us</Link>.</p>
         </LegalSection>
 
         <LegalSection title="7. Your Rights">
@@ -48,7 +48,7 @@ export default function Privacy() {
             <li>Correct inaccurate data</li>
             <li>Request deletion of your account and data</li>
           </ul>
-          <p>To exercise any of these rights, <Link to="/contact">contact us</Link> or email <a href="mailto:reyanshofficial01@gmail.com">reyanshofficial01@gmail.com</a>.</p>
+          <p>To exercise any of these rights, <Link to="/contact">contact us</Link> via Instagram or WhatsApp.</p>
         </LegalSection>
 
         <LegalSection title="8. Security">

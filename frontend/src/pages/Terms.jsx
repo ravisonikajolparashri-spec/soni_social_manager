@@ -76,7 +76,7 @@ export default function Terms() {
         </LegalSection>
 
         <LegalSection title="12. Contact">
-          <p>For any queries regarding these Terms, <Link to="/contact">contact us</Link> or email <a href="mailto:reyanshofficial01@gmail.com">reyanshofficial01@gmail.com</a>.</p>
+          <p>For any queries regarding these Terms, <Link to="/contact">contact us</Link> via Instagram or WhatsApp.</p>
         </LegalSection>
       </LegalCard>
     </LegalLayout>
