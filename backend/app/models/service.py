@@ -17,5 +17,6 @@ class Service(Base):
     refill = Column(Boolean, default=False)
     cancel = Column(Boolean, default=False)
     is_active = Column(Boolean, default=True)
+    country = Column(String, default="Global", nullable=False, index=True)  # e.g. "India", "USA", "Global"
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

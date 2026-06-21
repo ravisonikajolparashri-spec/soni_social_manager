@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, update
+from sqlalchemy import select, func, update, cast, Numeric
 from typing import Optional
 from datetime import datetime, timezone
 from app.database import get_db
@@ -11,13 +11,14 @@ from app.models.transaction import Transaction
 from app.models.payment_request import PaymentRequest
 from app.models.setting import Setting
 from app.schemas.user import UserOut, UserUpdate
-from app.schemas.service import ServiceOut, ServiceUpdate
+from app.schemas.service import ServiceOut, ServiceUpdate, BulkPriceAdjustRequest, BulkPriceAdjustResult
 from app.schemas.order import OrderOut
 from app.schemas.transaction import TransactionOut, AddFundsRequest
 from app.schemas.payment_request import (
     PaymentRequestAdminOut, PaymentRequestAdminListOut, PaymentRequestReview, PaymentQRUpdate,
 )
 from app.utils.auth import get_admin_user
+from app.utils.country_detect import detect_country
 from app.services.smm_api import smm_client, SMMApiError
 from app.routers.transactions import invalidate_payment_qr_cache
 
@@ -135,10 +136,12 @@ async def sync_services(db: AsyncSession = Depends(get_db), _: User = Depends(ge
             existing.cancel = bool(svc.get("cancel", False))
             updated += 1
         else:
+            name = svc.get("name", "")
+            category = svc.get("category", "General")
             service = Service(
                 external_id=ext_id,
-                name=svc.get("name", ""),
-                category=svc.get("category", "General"),
+                name=name,
+                category=category,
                 type=svc.get("type", "Default"),
                 rate=markup_rate,
                 original_rate=original_rate,
@@ -146,6 +149,9 @@ async def sync_services(db: AsyncSession = Depends(get_db), _: User = Depends(ge
                 max_order=int(svc.get("max", 10000)),
                 refill=bool(svc.get("refill", False)),
                 cancel=bool(svc.get("cancel", False)),
+                # Auto-detected once at creation only — never overwritten on
+                # later syncs, so an admin's manual country override sticks.
+                country=detect_country(name, category),
             )
             db.add(service)
             added += 1
@@ -177,6 +183,65 @@ async def update_service(
     await db.commit()
     await db.refresh(service)
     return service
+
+
+@router.post("/services/detect-countries")
+async def detect_service_countries(
+    db: AsyncSession = Depends(get_db), _: User = Depends(get_admin_user)
+):
+    """
+    One-time backfill: scans every service currently tagged "Global" (i.e.
+    every service that existed before country tagging was added, or any new
+    one the keyword scan didn't catch) and re-runs the name/category keyword
+    detector on it. Safe to re-run any time — already-tagged services
+    (anything not "Global") are left alone so manual admin overrides stick.
+    """
+    result = await db.execute(select(Service).where(Service.country == "Global"))
+    services = result.scalars().all()
+
+    updated = 0
+    for svc in services:
+        detected = detect_country(svc.name, svc.category)
+        if detected != "Global":
+            svc.country = detected
+            updated += 1
+
+    await db.commit()
+    return {"scanned": len(services), "updated": updated}
+
+
+@router.post("/services/bulk-price-adjust", response_model=BulkPriceAdjustResult)
+async def bulk_price_adjust(
+    data: BulkPriceAdjustRequest,
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(get_admin_user),
+):
+    """
+    Increase/decrease the selling rate of many services at once by a
+    percentage, e.g. percentage=30 raises every matching rate by 30%.
+    Runs as a single SQL UPDATE so it's fast even across 1700+ rows.
+    """
+    if data.scope == "category" and not data.category:
+        raise HTTPException(status_code=400, detail="category is required when scope='category'")
+    if data.scope == "selected" and not data.service_ids:
+        raise HTTPException(status_code=400, detail="service_ids is required when scope='selected'")
+
+    factor = 1 + (data.percentage / 100)
+
+    # Round to 4 decimal places. Postgres' round() needs a numeric type
+    # (it doesn't support rounding double precision), hence the cast.
+    new_rate_expr = func.round(cast(Service.rate * factor, Numeric(14, 4)), 4)
+
+    stmt = update(Service).values(rate=new_rate_expr)
+    if data.scope == "category":
+        stmt = stmt.where(Service.category == data.category)
+    elif data.scope == "selected":
+        stmt = stmt.where(Service.id.in_(data.service_ids))
+
+    result = await db.execute(stmt)
+    await db.commit()
+
+    return BulkPriceAdjustResult(updated=result.rowcount, percentage=data.percentage, scope=data.scope)
 
 
 # ── Orders ───────────────────────────────────────────────────────────────────

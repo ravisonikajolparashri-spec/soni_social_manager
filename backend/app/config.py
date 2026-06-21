@@ -15,6 +15,19 @@ class Settings(BaseSettings):
     ADMIN_EMAIL: str
     ADMIN_PASSWORD: str
 
+    # Resend (https://resend.com) — used to send password-reset emails.
+    # Leave RESEND_API_KEY empty in dev to have reset links logged instead of emailed.
+    RESEND_API_KEY: str = ""
+    EMAIL_FROM: str = "Viral SMM Panel <onboarding@resend.dev>"
+
+    # Public URL of the frontend, used to build password-reset links, e.g.
+    # "https://myapp.vercel.app". No trailing slash.
+    FRONTEND_URL: str = "http://localhost:5173"
+
+    # IP geolocation provider used to sort services by the visitor's country.
+    # ip-api.com's free tier needs no key (45 req/min limit); results are cached.
+    GEOLOCATION_API_URL: str = "http://ip-api.com/json"
+
     # Comma-separated list of allowed origins, e.g. "https://myapp.vercel.app,http://localhost:5173"
     # Also accepts "*" to allow all origins (useful for debugging)
     ALLOWED_ORIGINS: str = "http://localhost:5173,http://localhost:3000"

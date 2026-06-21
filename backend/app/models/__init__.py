@@ -4,5 +4,6 @@ from app.models.order import Order
 from app.models.transaction import Transaction
 from app.models.payment_request import PaymentRequest
 from app.models.setting import Setting
+from app.models.password_reset_token import PasswordResetToken
 
-__all__ = ["User", "Service", "Order", "Transaction", "PaymentRequest", "Setting"]
+__all__ = ["User", "Service", "Order", "Transaction", "PaymentRequest", "Setting", "PasswordResetToken"]

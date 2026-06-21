@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from typing import Optional
@@ -7,12 +7,14 @@ from app.models.service import Service
 from app.schemas.service import ServiceOut
 from app.utils.auth import get_current_user
 from app.models.user import User
+from app.services.geo_service import get_client_ip, get_country_for_ip
 
 router = APIRouter(prefix="/api/services", tags=["services"])
 
 
 @router.get("", response_model=list[ServiceOut])
 async def list_services(
+    request: Request,
     category: Optional[str] = None,
     db: AsyncSession = Depends(get_db),
     _: User = Depends(get_current_user)
@@ -20,9 +22,17 @@ async def list_services(
     query = select(Service).where(Service.is_active == True)
     if category:
         query = query.where(Service.category == category)
+    # Base order is category, name — the country re-sort below is a *stable*
+    # sort, so within "my country" and "everything else" this ordering holds.
     query = query.order_by(Service.category, Service.name)
     result = await db.execute(query)
-    return result.scalars().all()
+    services = result.scalars().all()
+
+    visitor_country = await get_country_for_ip(get_client_ip(request))
+    if visitor_country:
+        services = sorted(services, key=lambda s: s.country != visitor_country)
+
+    return services
 
 
 @router.get("/categories")

@@ -42,3 +42,26 @@ async def get_db() -> AsyncSession:
 async def init_db():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        await _run_lightweight_migrations(conn)
+
+
+async def _run_lightweight_migrations(conn):
+    """
+    This project uses Base.metadata.create_all() instead of Alembic, which only
+    creates brand-new tables — it never adds columns to a table that already
+    exists in production. Any column added to a model after the table has been
+    created in a live DB needs an explicit ALTER TABLE here (Postgres-only,
+    using IF NOT EXISTS so this is safe to run on every startup).
+    """
+    from sqlalchemy import text
+
+    statements = [
+        "ALTER TABLE services ADD COLUMN IF NOT EXISTS country VARCHAR DEFAULT 'Global' NOT NULL",
+        "CREATE INDEX IF NOT EXISTS ix_services_country ON services (country)",
+    ]
+    for stmt in statements:
+        try:
+            await conn.execute(text(stmt))
+        except Exception:
+            # Non-Postgres backend or column already managed some other way — skip.
+            pass

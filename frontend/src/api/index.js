@@ -63,6 +63,8 @@ export const authAPI = {
     return api.post('/auth/login', form, { headers: { 'Content-Type': 'multipart/form-data' } })
   },
   me: () => api.get('/auth/me'),
+  forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
+  resetPassword: (token, new_password) => api.post('/auth/reset-password', { token, new_password }),
 }
 
 // ── Services ──────────────────────────────────────────────────────────────
@@ -104,6 +106,8 @@ export const adminAPI = {
   services: () => api.get('/admin/services'),
   syncServices: () => api.post('/admin/services/sync'),
   updateService: (id, data) => api.patch(`/admin/services/${id}`, data),
+  bulkPriceAdjust: (data) => api.post('/admin/services/bulk-price-adjust', data),
+  detectCountries: () => api.post('/admin/services/detect-countries'),
   orders: (status) => api.get('/admin/orders', { params: status ? { status } : {} }),
   // Payment QR settings
   getPaymentQR: () => api.get('/admin/settings/payment-qr'),
