@@ -20,8 +20,8 @@ function PublicShell({ children }) {
       <nav className="sticky top-0 z-20 bg-white/90 backdrop-blur-md border-b border-slate-200">
         <div className="max-w-3xl mx-auto flex items-center justify-between gap-2 px-4 sm:px-6 py-3.5 sm:py-4">
           <Link to="/" className="flex items-center gap-2 min-w-0">
-            <img src="/logo-icon.png" alt="Viral SMM Panel" className="w-7 h-7 sm:w-8 sm:h-8 object-contain shrink-0" />
-            <span className="text-sm sm:text-base font-bold text-slate-800 truncate">Viral SMM Panel</span>
+            <img src="/logo-icon.png" alt="SocialHypeCrowd" className="w-7 h-7 sm:w-8 sm:h-8 object-contain shrink-0" />
+            <span className="text-sm sm:text-base font-bold text-slate-800 truncate">SocialHypeCrowd</span>
           </Link>
           <Link to="/" className="text-xs sm:text-sm font-medium text-brand-600 hover:text-brand-700 shrink-0 whitespace-nowrap">
             ← Back to home
@@ -35,7 +35,7 @@ function PublicShell({ children }) {
 
       <footer className="border-t border-slate-200 px-4 sm:px-6 py-5 sm:py-6">
         <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-slate-400 order-2 sm:order-1">© {new Date().getFullYear()} Viral SMM Panel. All rights reserved.</p>
+          <p className="text-xs text-slate-400 order-2 sm:order-1">© {new Date().getFullYear()} SocialHypeCrowd. All rights reserved.</p>
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 order-1 sm:order-2">
             {footerLinks.map(l => (
               <Link key={l.to} to={l.to} className="text-xs text-slate-500 hover:text-slate-700 transition-colors">

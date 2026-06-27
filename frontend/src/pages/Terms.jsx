@@ -7,15 +7,15 @@ export default function Terms() {
       <LegalHeader title="Terms of Service" meta="Last updated: June 2026 · Please read these terms carefully before using our platform." />
       <LegalCard>
         <LegalCallout tone="amber">
-          ⚠️ By registering or using Viral SMM Panel, you agree to be bound by these Terms of Service.
+          ⚠️ By registering or using SocialHypeCrowd, you agree to be bound by these Terms of Service.
         </LegalCallout>
 
         <LegalSection title="1. Acceptance of Terms">
-          <p>These Terms of Service ("Terms") govern your use of Viral SMM Panel ("Platform", "Service"). By accessing or using the Platform, you confirm you are at least 18 years old and agree to these Terms.</p>
+          <p>These Terms of Service ("Terms") govern your use of SocialHypeCrowd ("Platform", "Service"). By accessing or using the Platform, you confirm you are at least 18 years old and agree to these Terms.</p>
         </LegalSection>
 
         <LegalSection title="2. Service Description">
-          <p>Viral SMM Panel is a social media marketing reseller panel that provides followers, likes, views, and engagement services for various social media platforms. All services are delivered through third-party providers.</p>
+          <p>SocialHypeCrowd is a social media marketing reseller panel that provides followers, likes, views, and engagement services for various social media platforms. All services are delivered through third-party providers.</p>
         </LegalSection>
 
         <LegalSection title="3. Account Responsibilities">
@@ -60,7 +60,7 @@ export default function Terms() {
         </LegalSection>
 
         <LegalSection title="8. Limitation of Liability">
-          <p>Viral SMM Panel shall not be liable for any indirect, incidental, or consequential damages including loss of followers, account suspension by social media platforms, or business losses. Our total liability shall not exceed the amount you paid for the specific order in question.</p>
+          <p>SocialHypeCrowd shall not be liable for any indirect, incidental, or consequential damages including loss of followers, account suspension by social media platforms, or business losses. Our total liability shall not exceed the amount you paid for the specific order in question.</p>
         </LegalSection>
 
         <LegalSection title="9. Termination">

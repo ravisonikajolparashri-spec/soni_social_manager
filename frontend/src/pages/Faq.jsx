@@ -5,8 +5,8 @@ const faqGroups = [
   {
     section: 'General',
     items: [
-      { q: 'What is Viral SMM Panel?', a: "Viral SMM Panel is India's most affordable social media marketing (SMM) reseller panel. We provide followers, likes, views, comments and engagement services for Instagram, YouTube, TikTok, Twitter, Facebook, Telegram and more — at the lowest prices in the market." },
-      { q: 'Is it safe to use Viral SMM Panel?', a: 'Yes. All services use account-safe methods — we never ask for your social media passwords. Your account credentials are never required at any point. We only need the public link to your profile, post, or video.' },
+      { q: 'What is SocialHypeCrowd?', a: "SocialHypeCrowd is India's most affordable social media marketing (SMM) reseller panel. We provide followers, likes, views, comments and engagement services for Instagram, YouTube, TikTok, Twitter, Facebook, Telegram and more — at the lowest prices in the market." },
+      { q: 'Is it safe to use SocialHypeCrowd?', a: 'Yes. All services use account-safe methods — we never ask for your social media passwords. Your account credentials are never required at any point. We only need the public link to your profile, post, or video.' },
       { q: 'Is this legal?', a: 'Buying social media engagement is not illegal. However, it may be against the Terms of Service of individual platforms (Instagram, YouTube, etc.). We recommend using our services responsibly and in moderation. We are not responsible for any action taken by social media platforms on your accounts.' },
       { q: 'Which platforms do you support?', list: [
         'Instagram — followers, likes, views, story views, comments',
@@ -73,7 +73,7 @@ function FaqItem({ q, a, list }) {
 export default function Faq() {
   return (
     <LegalLayout>
-      <LegalHeader title="Frequently Asked Questions" meta="Everything you need to know about Viral SMM Panel." />
+      <LegalHeader title="Frequently Asked Questions" meta="Everything you need to know about SocialHypeCrowd." />
 
       <div className="space-y-6 sm:space-y-8">
         {faqGroups.map(g => (

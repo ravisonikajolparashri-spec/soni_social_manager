@@ -29,8 +29,8 @@ export default function Home() {
       <nav className="sticky top-0 z-20 bg-slate-950/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-6xl mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4">
           <div className="flex items-center gap-2">
-            <img src="/logo-icon.png" alt="Viral SMM Panel" className="w-7 h-7 sm:w-8 sm:h-8 shrink-0 object-contain" />
-            <span className="text-base sm:text-lg font-bold tracking-tight">Viral SMM Panel</span>
+            <img src="/logo-icon.png" alt="SocialHypeCrowd" className="w-7 h-7 sm:w-8 sm:h-8 shrink-0 object-contain" />
+            <span className="text-base sm:text-lg font-bold tracking-tight">SocialHypeCrowd</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
             {user ? (
@@ -59,7 +59,7 @@ export default function Home() {
       <section className="max-w-4xl mx-auto px-4 sm:px-6 pt-16 sm:pt-24 pb-14 sm:pb-20 text-center">
         <div className="inline-flex items-center gap-2 bg-brand-900/40 border border-brand-700/50 text-brand-300 text-xs font-semibold px-3.5 py-1.5 rounded-full mb-6 sm:mb-8">
           <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
-          India's Most Affordable SMM Panel
+          India's Most Affordable Social Media Panel
         </div>
         <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold leading-tight mb-4 sm:mb-6 tracking-tight px-2">
           Grow Your Social Media<br />
@@ -142,7 +142,7 @@ export default function Home() {
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 sm:pb-20">
         <div className="bg-gradient-to-r from-brand-600 to-brand-700 rounded-2xl sm:rounded-3xl px-6 sm:px-10 py-8 sm:py-12 text-center shadow-2xl shadow-brand-900/40">
           <h2 className="text-2xl sm:text-3xl font-extrabold mb-2 sm:mb-3">Ready to go viral?</h2>
-          <p className="text-brand-200 text-sm sm:text-base mb-6 sm:mb-8">Join thousands of creators already growing with Viral SMM Panel.</p>
+          <p className="text-brand-200 text-sm sm:text-base mb-6 sm:mb-8">Join thousands of creators already growing with SocialHypeCrowd.</p>
           <Link
             to={user ? '/new-order' : '/register'}
             className="inline-flex items-center gap-2 bg-white text-brand-700 hover:bg-brand-50 active:bg-brand-100 px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl text-sm sm:text-base font-bold transition-colors shadow-lg touch-manipulation min-h-[48px]"
@@ -157,10 +157,10 @@ export default function Home() {
       <footer className="border-t border-white/5 px-4 sm:px-6 py-5 sm:py-6">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-slate-600 text-xs">
           <div className="flex items-center gap-2">
-            <img src="/logo-icon.png" alt="Viral SMM Panel" className="w-5 h-5 object-contain" />
-            <span>Viral SMM Panel</span>
+            <img src="/logo-icon.png" alt="SocialHypeCrowd" className="w-5 h-5 object-contain" />
+            <span>SocialHypeCrowd</span>
           </div>
-          <p>© {new Date().getFullYear()} Viral SMM Panel. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} SocialHypeCrowd. All rights reserved.</p>
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
             <Link to="/login" className="hover:text-slate-400 transition-colors">Sign In</Link>
             <Link to="/register" className="hover:text-slate-400 transition-colors">Register</Link>

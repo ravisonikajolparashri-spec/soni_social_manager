@@ -7,7 +7,7 @@ export default function Privacy() {
       <LegalHeader title="Privacy Policy" meta="Last updated: June 2026 · Effective immediately" />
       <LegalCard>
         <LegalSection title="1. Who We Are">
-          <p>Viral SMM Panel ("we", "us", "our") operates the website <a href="https://viral-smm.vercel.app">https://viral-smm.vercel.app</a> — a social media marketing services platform. For any privacy enquiries <Link to="/contact">contact us</Link> via Instagram or WhatsApp.</p>
+          <p>SocialHypeCrowd ("we", "us", "our") operates the website <a href="https://viral-smm.vercel.app">https://viral-smm.vercel.app</a> — a social media marketing services platform. For any privacy enquiries <Link to="/contact">contact us</Link> via Instagram or WhatsApp.</p>
         </LegalSection>
 
         <LegalSection title="2. Information We Collect">

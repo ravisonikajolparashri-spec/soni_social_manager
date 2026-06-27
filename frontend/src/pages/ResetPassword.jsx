@@ -35,8 +35,8 @@ export default function ResetPassword() {
         {/* Logo */}
         <div className="text-center mb-6 sm:mb-8">
           <Link to="/" className="inline-flex items-center gap-2.5 mb-3">
-            <img src="/logo-icon.png" alt="Viral SMM Panel" className="w-9 h-9 sm:w-10 sm:h-10 object-contain" />
-            <span className="text-xl sm:text-2xl font-bold text-white">Viral SMM Panel</span>
+            <img src="/logo-icon.png" alt="SocialHypeCrowd" className="w-9 h-9 sm:w-10 sm:h-10 object-contain" />
+            <span className="text-xl sm:text-2xl font-bold text-white">SocialHypeCrowd</span>
           </Link>
           <p className="text-slate-400 text-sm">Choose a new password</p>
         </div>

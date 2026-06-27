@@ -44,8 +44,8 @@ export default function Layout({ children }) {
             </svg>
           </button>
           <Link to="/dashboard" className="flex items-center gap-2">
-            <img src="/logo-icon.png" alt="Viral SMM Panel" className="w-7 h-7 object-contain" />
-            <span className="font-bold text-slate-800 text-sm">Viral SMM Panel</span>
+            <img src="/logo-icon.png" alt="SocialHypeCrowd" className="w-7 h-7 object-contain" />
+            <span className="font-bold text-slate-800 text-sm">SocialHypeCrowd</span>
           </Link>
         </header>
 

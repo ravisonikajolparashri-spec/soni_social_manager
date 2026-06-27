@@ -1,7 +1,7 @@
 // ─── App-wide configuration ───────────────────────────────────────────────────
 // Change values here; they propagate everywhere automatically.
 
-export const APP_NAME = 'Viral SMM Panel'
+export const APP_NAME = 'SocialHypeCrowd'
 
 export const CURRENCY = {
   symbol: '₹',

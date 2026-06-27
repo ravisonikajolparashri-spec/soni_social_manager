@@ -1,4 +1,4 @@
-# SMM Panel — Setup Guide
+# SocialHypeCrowd — Setup Guide
 
 ## Prerequisites
 - Python 3.11+

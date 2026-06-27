@@ -11,14 +11,14 @@ class Settings(BaseSettings):
     SMM_API_URL: str = "https://bluesmmpanel.com/api/v2"
     SMM_API_KEY: str
 
-    APP_NAME: str = "Viral SMM Panel"
+    APP_NAME: str = "SocialHypeCrowd"
     ADMIN_EMAIL: str
     ADMIN_PASSWORD: str
 
     # Resend (https://resend.com) — used to send password-reset emails.
     # Leave RESEND_API_KEY empty in dev to have reset links logged instead of emailed.
     RESEND_API_KEY: str = ""
-    EMAIL_FROM: str = "Viral SMM Panel <onboarding@resend.dev>"
+    EMAIL_FROM: str = "SocialHypeCrowd <onboarding@resend.dev>"
 
     # Public URL of the frontend, used to build password-reset links, e.g.
     # "https://myapp.vercel.app". No trailing slash.

@@ -74,8 +74,8 @@ export default function Sidebar({ onClose }) {
       {/* Brand + Close button (close only on mobile) */}
       <div className="px-4 py-4 border-b border-slate-700/60 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <img src="/logo-icon.png" alt="Viral SMM Panel" className="w-8 h-8 object-contain shrink-0" />
-          <span className="text-base font-bold text-white tracking-tight leading-tight">Viral SMM Panel</span>
+          <img src="/logo-icon.png" alt="SocialHypeCrowd" className="w-8 h-8 object-contain shrink-0" />
+          <span className="text-base font-bold text-white tracking-tight leading-tight">SocialHypeCrowd</span>
         </div>
         {onClose && (
           <button
