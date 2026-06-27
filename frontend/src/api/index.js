@@ -67,6 +67,12 @@ export const authAPI = {
   resetPassword: (token, new_password) => api.post('/auth/reset-password', { token, new_password }),
 }
 
+// ── Public settings ─────────────────────────────────────────────────────────
+export const settingsAPI = {
+  // Contact/social links shown on the Contact page — no auth required.
+  getContactDetails: () => api.get('/settings/contact-details'),
+}
+
 // ── Services ──────────────────────────────────────────────────────────────
 export const servicesAPI = {
   list: (category) => api.get('/services', { params: category ? { category } : {} }),
@@ -112,6 +118,9 @@ export const adminAPI = {
   // Payment QR settings
   getPaymentQR: () => api.get('/admin/settings/payment-qr'),
   setPaymentQR: (image) => api.put('/admin/settings/payment-qr', { image }),
+  // Contact / social link settings
+  getContactDetails: () => api.get('/admin/settings/contact-details'),
+  setContactDetails: (data) => api.put('/admin/settings/contact-details', data),
   // Manual payment requests review (screenshot blobs excluded from the list — lazy-load below)
   paymentRequests: (status, limit = 50, offset = 0) =>
     api.get('/admin/payment-requests', { params: { ...(status ? { status } : {}), limit, offset } }),

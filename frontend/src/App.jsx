@@ -28,6 +28,7 @@ import AdminUsers from './pages/admin/AdminUsers'
 import AdminServices from './pages/admin/AdminServices'
 import AdminOrders from './pages/admin/AdminOrders'
 import AdminPayments from './pages/admin/AdminPayments'
+import AdminSettings from './pages/admin/AdminSettings'
 
 export default function App() {
   return (
@@ -58,6 +59,7 @@ export default function App() {
       <Route path="/admin/services" element={<AdminRoute><Layout><AdminServices /></Layout></AdminRoute>} />
       <Route path="/admin/orders" element={<AdminRoute><Layout><AdminOrders /></Layout></AdminRoute>} />
       <Route path="/admin/payments" element={<AdminRoute><Layout><AdminPayments /></Layout></AdminRoute>} />
+      <Route path="/admin/settings" element={<AdminRoute><Layout><AdminSettings /></Layout></AdminRoute>} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

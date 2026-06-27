@@ -8,7 +8,7 @@ from slowapi.errors import RateLimitExceeded
 from app.config import settings
 from app.database import init_db, AsyncSessionLocal
 from app.models import User, Service, Order, Transaction, PaymentRequest, Setting  # noqa: register models
-from app.routers import auth, services, orders, transactions, admin
+from app.routers import auth, services, orders, transactions, admin, settings as settings_router
 from app.utils.tasks import sync_order_statuses
 from app.utils.auth import hash_password
 from app.utils.rate_limit import limiter
@@ -123,6 +123,7 @@ app.include_router(services.router)
 app.include_router(orders.router)
 app.include_router(transactions.router)
 app.include_router(admin.router)
+app.include_router(settings_router.router)
 
 
 @app.get("/health")

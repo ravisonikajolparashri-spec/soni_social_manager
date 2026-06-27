@@ -1,15 +1,24 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { settingsAPI } from '../api'
 import LegalLayout, { LegalHeader, LegalCard } from '../components/LegalLayout'
 
-/* Single source of truth for both contact channels — reused by the cards
-   grid below and the bottom CTA buttons. */
-const INSTAGRAM_URL = 'https://www.instagram.com/viralsmmpanel_?igsh=MWhhNHF0eGpmOTd6cg=='
-const WHATSAPP_URL = 'https://wa.me/919410275555'
+/* Fallback defaults — shown until the admin-configured values (editable in
+   Admin → Settings) load, and as a safety net if that fetch ever fails. */
+const DEFAULT_CONTACT = {
+  instagram_url: 'https://www.instagram.com/viralsmmpanel_?igsh=MWhhNHF0eGpmOTd6cg==',
+  instagram_label: '@viralsmmpanel_',
+  whatsapp_number: '+91 94102 75555',
+}
 
 /* wa.me and instagram.com profile links are universal links — on a phone
    with the app installed, the OS opens the native app directly; otherwise
    they fall back to the mobile/desktop website. No extra JS needed. */
+function waLink(number) {
+  const digits = (number || '').replace(/[^\d]/g, '')
+  return digits ? `https://wa.me/${digits}` : '#'
+}
 
 function InstagramIcon({ className = 'w-5 h-5' }) {
   return (
@@ -29,27 +38,36 @@ function WhatsAppIcon({ className = 'w-5 h-5' }) {
   )
 }
 
-const contactCards = [
-  {
-    title: 'Instagram',
-    desc: 'DM us for quick replies and the latest updates.',
-    Icon: InstagramIcon,
-    iconBg: 'bg-gradient-to-br from-fuchsia-500 via-pink-500 to-amber-400 text-white',
-    href: INSTAGRAM_URL,
-    label: '@viralsmmpanel_',
-  },
-  {
-    title: 'WhatsApp',
-    desc: 'Chat with us directly — available 24/7.',
-    Icon: WhatsAppIcon,
-    iconBg: 'bg-emerald-100 text-emerald-600',
-    href: WHATSAPP_URL,
-    label: '+91 94102 75555',
-  },
-]
-
 export default function Contact() {
   const { user } = useAuth()
+  const [contact, setContact] = useState(DEFAULT_CONTACT)
+
+  useEffect(() => {
+    settingsAPI.getContactDetails()
+      .then(r => setContact(c => ({ ...c, ...r.data })))
+      .catch(() => {}) // keep defaults on failure
+  }, [])
+
+  const whatsappUrl = waLink(contact.whatsapp_number)
+
+  const contactCards = [
+    {
+      title: 'Instagram',
+      desc: 'DM us for quick replies and the latest updates.',
+      Icon: InstagramIcon,
+      iconBg: 'bg-gradient-to-br from-fuchsia-500 via-pink-500 to-amber-400 text-white',
+      href: contact.instagram_url,
+      label: contact.instagram_label,
+    },
+    {
+      title: 'WhatsApp',
+      desc: 'Chat with us directly — available 24/7.',
+      Icon: WhatsAppIcon,
+      iconBg: 'bg-emerald-100 text-emerald-600',
+      href: whatsappUrl,
+      label: contact.whatsapp_number,
+    },
+  ]
 
   return (
     <LegalLayout>
@@ -101,7 +119,7 @@ export default function Contact() {
           <p className="text-brand-200 text-sm mb-5">Our support team is here for you 24/7.</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <a
-              href={WHATSAPP_URL}
+              href={whatsappUrl}
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center justify-center gap-2 bg-white text-brand-700 hover:bg-brand-50 px-6 py-2.5 rounded-xl text-sm font-bold transition-colors min-h-[44px] w-full sm:w-auto"
@@ -110,7 +128,7 @@ export default function Contact() {
               Message on WhatsApp
             </a>
             <a
-              href={INSTAGRAM_URL}
+              href={contact.instagram_url}
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center justify-center gap-2 bg-white/10 border border-white/30 text-white hover:bg-white/20 px-6 py-2.5 rounded-xl text-sm font-bold transition-colors min-h-[44px] w-full sm:w-auto"

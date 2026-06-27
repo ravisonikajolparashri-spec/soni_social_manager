@@ -1,3 +1,4 @@
+import json
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, update, cast, Numeric
@@ -17,6 +18,7 @@ from app.schemas.transaction import TransactionOut, AddFundsRequest
 from app.schemas.payment_request import (
     PaymentRequestAdminOut, PaymentRequestAdminListOut, PaymentRequestReview, PaymentQRUpdate,
 )
+from app.schemas.contact_settings import ContactSettings, ContactSettingsUpdate
 from app.utils.auth import get_admin_user
 from app.utils.country_detect import detect_country
 from app.services.smm_api import smm_client, SMMApiError
@@ -25,6 +27,7 @@ from app.routers.transactions import invalidate_payment_qr_cache
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
 PAYMENT_QR_KEY = "payment_qr_image"
+CONTACT_SETTINGS_KEY = "contact_details"
 
 
 # ── Dashboard stats ──────────────────────────────────────────────────────────
@@ -284,6 +287,41 @@ async def admin_set_payment_qr(
     await db.commit()
     invalidate_payment_qr_cache()
     return {"image": data.image}
+
+
+# ── Contact / social link settings ───────────────────────────────────────────
+# Lets an admin change the Instagram / WhatsApp links shown on the public
+# Contact page without touching code. Stored as JSON in the generic Setting
+# table (same pattern as the payment QR above).
+
+@router.get("/settings/contact-details", response_model=ContactSettings)
+async def admin_get_contact_details(db: AsyncSession = Depends(get_db), _: User = Depends(get_admin_user)):
+    result = await db.execute(select(Setting).where(Setting.key == CONTACT_SETTINGS_KEY))
+    setting = result.scalar_one_or_none()
+    if not setting or not setting.value:
+        return ContactSettings()
+    try:
+        return ContactSettings(**json.loads(setting.value))
+    except Exception:
+        return ContactSettings()
+
+
+@router.put("/settings/contact-details", response_model=ContactSettings)
+async def admin_set_contact_details(
+    data: ContactSettingsUpdate,
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(get_admin_user)
+):
+    value = json.dumps(data.model_dump())
+    result = await db.execute(select(Setting).where(Setting.key == CONTACT_SETTINGS_KEY))
+    setting = result.scalar_one_or_none()
+    if setting:
+        setting.value = value
+    else:
+        setting = Setting(key=CONTACT_SETTINGS_KEY, value=value)
+        db.add(setting)
+    await db.commit()
+    return ContactSettings(**data.model_dump())
 
 
 # ── Manual payment requests (scan QR & pay) ──────────────────────────────────
